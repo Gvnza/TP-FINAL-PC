@@ -43,42 +43,14 @@ pokemons_type = [
                 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
                 ]
 
-def team_generator(num_teams):
+def team_generator(epoch):
     teams = []
-    
-    for _ in range(num_teams):
-        team = set()  # Usamos un conjunto para evitar duplicados
-        
-        pokemon_I = random.choice(save_names_types(csv_file))
-        team.add(pokemon_I['name'])
-    
-        pokemon_II = pokemon_I
-        while pokemon_II['type'] == pokemon_I['type']:
-            pokemon_II = random.choice(save_names_types(csv_file))
-        team.add(pokemon_II['name'])
-
-        pokemon_III = pokemon_II
-        while (pokemon_III['type'] == pokemon_II['type']) or (pokemon_III['type'] == pokemon_I['type']):
-            pokemon_III = random.choice(save_names_types(csv_file))
-        team.add(pokemon_III['name'])
-
-        pokemon_IV = pokemon_III
-        while (pokemon_IV['type'] == pokemon_III['type']) or (pokemon_IV['type'] == pokemon_II['type']) or (pokemon_IV['type'] == pokemon_I['type']):
-            pokemon_IV = random.choice(save_names_types(csv_file))
-        team.add(pokemon_IV['name'])
-
-        pokemon_V = pokemon_IV
-        while (pokemon_V['type'] == pokemon_IV['type']) or (pokemon_V['type'] == pokemon_III['type']) or (pokemon_V['type'] == pokemon_II['type']) or (pokemon_V['type'] == pokemon_I['type']):
-            pokemon_V = random.choice(save_names_types(csv_file))
-        team.add(pokemon_V['name'])
-
-        pokemon_VI = pokemon_V
-        while (pokemon_VI['type'] == pokemon_V['type']) or (pokemon_VI['type'] == pokemon_IV['type']) or (pokemon_VI['type'] == pokemon_III['type']) or (pokemon_VI['type'] == pokemon_II['type']) or (pokemon_VI['type'] == pokemon_I['type']):
-            pokemon_VI = random.choice(save_names_types(csv_file))
-        team.add(pokemon_VI['name'])
-        
-        teams.append(list(team))  # Convertimos el conjunto en una lista
-    
+    for _ in range(epoch):
+        team = []
+        for _ in range(6): 
+            pokemon = random.choice(save_names_types(csv_file))
+            team.append(pokemon['name'])
+        teams.append(list(team))
     return teams
 
 # Generar 50 equipos
