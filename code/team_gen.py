@@ -1,5 +1,5 @@
 import csv, random
-from typing import List
+from typing import List, Dict
 
 csv_file = 'pokemons.csv'
 
