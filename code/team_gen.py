@@ -59,9 +59,16 @@ def team_generator(epoch):
         teams.append(list(team))
     return teams
 
-# Generar 50 equipos
-generated_teams = team_generator(50)
+def no_duplicates(teams):
+    for team in teams:
+        for pokemon in team:
+            while team.count(pokemon) > 1:
+                pokemon.replace(generate_non_legendary())
+    return teams
 
+# Generar 50 equipos
+teams_duplicated = team_generator(50)
+generated_teams = no_duplicates(teams_duplicated)
 # Imprimir los equipos
 # for i, team in enumerate(generated_teams, start=1):
 #     print(f"Equipo {i}: {', '.join(team)}")
@@ -76,9 +83,9 @@ def generate_encounters():
         teams.append(list(team))
     return teams
 
-# for i, team in enumerate(generated_teams, start=1):
-#     print(f"Equipo {i}: {', '.join(team)}")
+for i, team in enumerate(generated_teams, start=1):
+    print(f"Equipo {i}: {', '.join(team)}")
 
-generated_encounters = generate_encounters()
-for i, encounter in enumerate(generated_encounters, start=1):
-    print(f"Encuentro {i}: {', '.join(encounter)}")
+# generated_encounters = generate_encounters()
+# for i, encounter in enumerate(generated_encounters, start=1):
+#     print(f"Encuentro {i}: {', '.join(encounter)}")
