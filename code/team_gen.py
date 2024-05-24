@@ -24,10 +24,11 @@ def save_names_types(csv_file: str) -> List[Dict[str, str]]:
         # Crea un lector de diccionarios para procesar el archivo CSV
         reader = csv.DictReader(csvfile)
         for row in reader:
-            # Agrega el nombre y el tipo del pokemon a la lista según la columna 'name' y 'type1'
+            # Agrega el nombre y el tipo del pokemon a la lista según la columna 'name' y 'type1' y 'is_legendary'
             pokemon_info = {
                 'name': row['name'],
-                'type': row['type1']
+                'type': row['type1'],
+                'legendary': row['is_legendary']
             }
 
             # Agrega la información a la lista
@@ -43,13 +44,18 @@ pokemons_type = [
                 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
                 ]
 
+def generate_non_legendary():
+    while True:
+        pokemon = random.choice(save_names_types(csv_file))
+        if pokemon['legendary'] != '1':
+            return pokemon['name']
+
 def team_generator(epoch):
     teams = []
     for _ in range(epoch):
         team = []
-        for _ in range(6): 
-            pokemon = random.choice(save_names_types(csv_file))
-            team.append(pokemon['name'])
+        for i in range(6):
+            team.append(generate_non_legendary())
         teams.append(list(team))
     return teams
 
