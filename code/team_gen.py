@@ -63,5 +63,22 @@ def team_generator(epoch):
 generated_teams = team_generator(50)
 
 # Imprimir los equipos
-for i, team in enumerate(generated_teams, start=1):
-    print(f"Equipo {i}: {', '.join(team)}")
+# for i, team in enumerate(generated_teams, start=1):
+#     print(f"Equipo {i}: {', '.join(team)}")
+
+def generate_encounters():
+    teams = []
+    for _ in range(400):
+        team = []
+        for i in range(6):
+            pokemon = random.choice(save_names_types(csv_file))
+            team.append(pokemon['name'])
+        teams.append(list(team))
+    return teams
+
+# for i, team in enumerate(generated_teams, start=1):
+#     print(f"Equipo {i}: {', '.join(team)}")
+
+generated_encounters = generate_encounters()
+for i, encounter in enumerate(generated_encounters, start=1):
+    print(f"Encuentro {i}: {', '.join(encounter)}")
