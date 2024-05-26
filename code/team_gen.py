@@ -1,91 +1,83 @@
 import csv, random
 from typing import List, Dict
-
-csv_file = 'pokemons.csv'
+import utils.pokemon
+import utils.move
+pokemons_csv = 'pokemons.csv'
+moves_csv = 'moves.csv'
 
 # Función que guardará los nombre de los pokemons en una lista
-def save_names_types(csv_file: str) -> List[Dict[str, str]]:
+def create_teams_and_pokemons(pokemons_csv: str) -> List[Dict[str, str]]:
     """
     Lee un archivo CSV y guarda los nombres y tipos principales de los pokemons en una lista.
 
     Args:
-        csv_file (str): Ruta al archivo CSV que contiene los datos de los pokemons.
+        pokemons_csv (str): Ruta al archivo CSV que contiene los datos de los pokemons.
 
     Returns:
         List[Dict[str, str]]: Lista de diccionarios con los nombre y tipos de los pokemons.
             Cada diccionario tiene las claves 'name' y 'type1'.
     """
-
-    # Crea una lista vacía para almacenar la informacion
-    pokemon_name_type = []
-
-    # Abre el archivo CSV en modo lectura
-    with open(csv_file, newline='') as csvfile:
+    pokemon_teams = []
+    with open(pokemons_csv, newline='') as csvfile:
         # Crea un lector de diccionarios para procesar el archivo CSV
-        reader = csv.DictReader(csvfile)
-        for row in reader:
+        pokemon_reader = csv.DictReader(csvfile)
+        pokemon_data = []
+        for row in pokemon_reader:
             # Agrega el nombre y el tipo del pokemon a la lista según la columna 'name' y 'type1' y 'is_legendary'
             pokemon_info = {
+                'pokedex_number': row['pokedex_number'],
                 'name': row['name'],
-                'type': row['type1'],
-                'legendary': row['is_legendary']
+                'type1': row['type1'],
+                'type2': row['type2'],
+                'hp': row['hp'],
+                'attack': row['attack'],
+                'defense': row['defense'],
+                'sp_attack': row['sp_attack'],
+                'sp_defense': row['sp_defense'],
+                'speed': row['speed'],
+                'generation': row['generation'],
+                'height_m': row['height_m'],
+                'weight_kg': row['weight_kg'],
+                'is_legendary': row['is_legendary'],
+                'moves': row['moves']
             }
-
-            # Agrega la información a la lista
-            pokemon_name_type.append(pokemon_info)
-
-    # Devuelve la lista de nombres y tipos
-    return pokemon_name_type
-
-# Lista de tipos de Pokémon
-pokemons_type = [
-                'normal', 'fire', 'water', 'grass', 'electric', 'ice',
-                'fighting', 'poison', 'ground', 'flying', 'psychic',
-                'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
-                ]
-
-def generate_non_legendary():
-    while True:
-        pokemon = random.choice(save_names_types(csv_file))
-        if pokemon['legendary'] != '1':
-            return pokemon['name']
-
-def team_generator(epoch):
-    teams = []
-    for _ in range(epoch):
+            pokemon_data.append(pokemon_info)
+    print(pokemon_data)
+    moves_reader = csv.DictReader('moves_csv')
+    with open('moves.csv', newline='') as moves_csv_file:
+        # Crea un lector de diccionarios para procesar el archivo CSV de movimientos
+        moves_reader = csv.DictReader(moves_csv_file)
+        move_data_list = []
+        # Itera sobre cada fila en el archivo CSV de movimientos
+        for move_row in moves_reader:
+            # Crea un diccionario con la información de cada movimiento
+            move_info = {
+                'name': move_row['name'],
+                'type': move_row['type'],
+                'category': move_row['category'],
+                'pp': move_row['pp'],
+                'power': move_row['power'],
+                'accuracy': move_row['accuracy']
+            }
+            move_data_list.append(move_info)
+    
+    for _ in range(50):
         team = []
-        for i in range(6):
-            team.append(generate_non_legendary())
-        teams.append(list(team))
-    return teams
+        for _ in range(6):
+            pokemon = random.choice(list(pokemon_data))
+            print(pokemon)
+            pokemon_name = pokemon_data[pokemon]['name']
+            pokemon_data.pop([pokemon]['name'])
+            moves_name = list(move_info['name'].split(';'))
+            move_info.pop('name')
+            moves_data = {}
+            for move in moves_name:
+                moves_data[move] = utils.move.Move.from_dict(move, move_info)
+            pokemon.pop('moves')
+            team.append(utils.pokemon.Pokemon.from_dict(pokemon_name, pokemon, moves_data))
+        pokemon_teams.append(team)
 
-def no_duplicates(teams):
-    for team in teams:
-        for pokemon in team:
-            while team.count(pokemon) > 1:
-                pokemon.replace(generate_non_legendary())
-    return teams
+    return pokemon_teams
 
-# Generar 50 equipos
-teams_duplicated = team_generator(50)
-generated_teams = no_duplicates(teams_duplicated)
-# Imprimir los equipos
-# for i, team in enumerate(generated_teams, start=1):
-#     print(f"Equipo {i}: {', '.join(team)}")
 
-def generate_encounters():
-    teams = []
-    for _ in range(400):
-        team = []
-        for i in range(6):
-            pokemon = random.choice(save_names_types(csv_file))
-            team.append(pokemon['name'])
-        teams.append(list(team))
-    return teams
-
-for i, team in enumerate(generated_teams, start=1):
-    print(f"Equipo {i}: {', '.join(team)}")
-
-# generated_encounters = generate_encounters()
-# for i, encounter in enumerate(generated_encounters, start=1):
-#     print(f"Encuentro {i}: {', '.join(encounter)}")
+create_teams_and_pokemons(pokemons_csv)
