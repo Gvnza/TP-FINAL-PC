@@ -4,13 +4,12 @@ import utils.pokemon
 import utils.move
 import utils.team
 
-def define_pokemons() -> List[Dict[str, str]]:
+def define_pokemons():
     """
     Lee un archivo CSV y guarda los datos en distintas listas.
 
     Returns:
-        names_list: Los nombres de los pokemons, en fila
-        .
+        names_list: Los nombres de los pokemons, en fila.
     """
     with open('pokemons.csv', newline='') as csvfile:
         # Crea un lector de diccionarios para procesar el archivo CSV
@@ -45,6 +44,13 @@ def define_pokemons() -> List[Dict[str, str]]:
     return names_list, pokemon_data, moves_list 
 
 def define_moves():
+    '''
+    Lee un archivo CSV y guarda los datos en forma de diccionario en una lista.
+
+    Returns:
+    moves_data: Un diccionario con la informacion de cada movimiento, con el siguiente formato:
+    [. . .{'Flamethrower': {'type': 'fire', 'category': 'special', 'pp': 10, 'power': 90, 'accuracy': 100}} . . .].
+    '''
     with open('moves.csv', newline='') as moves_file:
         moves_reader = csv.DictReader(moves_file)
         moves_data = []
@@ -60,6 +66,34 @@ def define_moves():
     return moves_data
 
 def generate_pokemons(all_names, all_data, moves_names, moves_data):
+    '''
+    Genera un pokemon, su nombre y los datos de sus movimientos de forma aleatoria.
+
+    Args:
+    all_names: Todos los nombres de los pokemones.
+    all data: Todos los datos de los pokemones, con el siguiente formato: ({
+        ...     'pokedex_number': 1,
+        ...     'type1': 'grass',
+        ...     'type2': 'poison',
+        ...     'hp': 45,
+        ...     'attack': 49, 
+        ...     'defense': 49,
+        ...     'sp_attack': 65,
+        ...     'sp_defense': 65,
+        ...     'speed': 45,
+        ...     'generation': 1,
+        ...     'height_m': 0.7,
+        ...     'weight_kg': 6.9,
+        ...     'is_legendary': False,
+        ...     'moves': ['tackle', 'growl', 'leer', 'vine whip']
+        ... }).
+    moves_data: Todos los datos de los movimientos.
+
+    Returns:
+    pokemon_name: El nombre del Pokemon
+    choice: Los datos del pokemon
+    moves_dicc: Un diccionario con los datos del movimiento
+    '''
     moves_data = define_moves()
     choice = random.choice(all_data) #Toma los datos de un pokemon de forma random (pokedex, tipos, stats, etc)
     pokemon_name = all_names[int(choice['pokedex_number']) -1] #Crea una variable que sea el nombre del pokemon. Se resta uno por el sistema basado en ceros.
@@ -78,21 +112,28 @@ def generate_pokemons(all_names, all_data, moves_names, moves_data):
     return pokemon_name, choice, moves_dicc
 
 def create_teams(cuantity):
+    '''
+    Crea todos los equipos.
+
+    Args:
+    cuantity: La cantidad de equipos totales que queres.
+
+    Returns: 
+    teams: Los equipos procesados con las funciones dadas.
+    '''
     all_names, all_data, moves_names = define_pokemons()
     moves = define_moves()
     teams = []
     for i in range(cuantity):
         team = []
-        team_pokemon_names = set() #Toma los nombres de los pokemones asi no hay duplicados (despues hay que hacerlo)
-        for _ in range(6):
+        team_pokemon_names = [] #Toma los nombres de los pokemones asi no hay duplicados (despues hay que hacerlo con un while)
+        while len(team) < 6:
             pokemon_name, choice, moves_dicc = generate_pokemons(all_names, all_data, moves_names, moves)
-            pokemon = utils.pokemon.Pokemon.from_dict(pokemon_name, choice, moves_dicc)
             if pokemon_name not in team_pokemon_names:
-                pokemon_name, choice, moves_dicc = generate_pokemons(all_names, all_data, moves_names, moves)
                 pokemon = utils.pokemon.Pokemon.from_dict(pokemon_name, choice, moves_dicc)
                 team.append(pokemon)
-                team_pokemon_names.add(pokemon_name)
-                break
+                team_pokemon_names.append(pokemon_name)
+            
             team.append(pokemon)
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
     return teams
