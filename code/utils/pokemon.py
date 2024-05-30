@@ -87,7 +87,7 @@ class Pokemon:
         ...     'type1': 'grass',
         ...     'type2': 'poison',
         ...     'hp': 45,
-        ...     'attack': 49,
+        ...     'attack': 49, 
         ...     'defense': 49,
         ...     'sp_attack': 65,
         ...     'sp_defense': 65,

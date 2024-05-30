@@ -1,6 +1,6 @@
 import team_gen
 import utils.combat
-import csv
+import csv 
 from typing import List, Dict
 #Variables necesarias
 
@@ -18,20 +18,18 @@ def read_effectiveness_chart(csv_file):
 csv_file = 'effectiveness_chart.csv'
 effectiveness_chart = read_effectiveness_chart(csv_file)
 
-first_teams = team_gen.team_generator(50)
-fixed_teams = team_gen.no_duplicates(first_teams)
-encounters = team_gen.generate_encounters()
+teams = team_gen.create_teams(50)
+rivals = team_gen.create_teams(400)
 
-def fights(teams, encounters):
+def fights(teams, rivals):
     wins_per_team = {}
     for team in teams:
         wins = 0
-        for encounter in encounters:
-            winner = utils.combat.__fight__(team, encounter, effectiveness_chart)
+        for encounter in rivals:
+            winner = utils.combat.get_winner(team, encounter, effectiveness_chart) #Un sistema bastante simple, toma el ganador y le suma 1.
             if winner == team:
                 wins +=1
         wins_per_team[team] = wins
-    wins_per_team.sort()
-    return wins_per_team
+    return wins_per_team #Nota: Organizar el diccionario
 
-print(fights(fixed_teams, encounters))
+print(fights(teams, rivals))
