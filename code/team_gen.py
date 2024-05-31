@@ -133,7 +133,6 @@ def create_teams(cuantity):
                 pokemon = utils.pokemon.Pokemon.from_dict(pokemon_name, choice, moves_dicc)
                 team.append(pokemon)
                 team_pokemon_names.append(pokemon_name)
-            
-            team.append(pokemon)
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
+
     return teams
