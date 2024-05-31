@@ -34,10 +34,10 @@ def read_effectiveness_chart(csv_file):
     return effectiveness_chart
 
 
-def fights():
+def fights(number_of_teams: int, number_of_rivals: int):
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
-    teams = team_gen.create_teams(50)
-    rivals = team_gen.create_teams(400)
+    teams = team_gen.create_teams(number_of_teams)
+    rivals = team_gen.create_teams(number_of_rivals)
     wins_per_team = {}
     for i, team in enumerate(teams, start=1):
         wins = 0
@@ -54,6 +54,6 @@ def fights():
     final_dicc = {}
     for num in ordered_wins:
         final_dicc[reversed_dicc[num]] = num
-    return final_dicc #Nota: Organizar el diccionario
+    return final_dicc
 
-print(fights())
+print(fights(50, 400))
