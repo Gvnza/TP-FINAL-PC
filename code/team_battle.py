@@ -54,6 +54,4 @@ def fights(number_of_teams: int, number_of_rivals: int):
     final_dicc = {}
     for num in ordered_wins:
         final_dicc[reversed_dicc[num]] = num
-    return final_dicc
-
-print(fights(50, 400))
+    return final_dicc, teams
