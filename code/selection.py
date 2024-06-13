@@ -3,6 +3,7 @@ import team_battle
 from utils.pokemon import Pokemon
 from utils.team import Team
 from utils.combat import get_winner
+
 def parents_selection(teams):
     total_wins = sum(list(teams.values()))
     probability = {}
