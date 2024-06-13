@@ -2,14 +2,17 @@ import team_gen
 import utils.combat
 import csv 
 import utils.team
-#Variables necesarias
 
-def read_effectiveness_chart(csv_file):
+def read_effectiveness_chart(csv_file: str) -> dict:
     effectiveness_chart = {}
+    # Abriendo el archivo csv
     with open(csv_file, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
+        # por cada linea del archivo
         for row in reader:
+            # Se guarda el tipo de ataque
             attack_type = row['attacking']
+            # Se guarda la efectividad
             effectiveness_values = {
                 'normal': float(row['normal']),
                 'fire': float(row['fire']),
@@ -30,24 +33,29 @@ def read_effectiveness_chart(csv_file):
                 'steel': float(row['steel']),
                 'fairy': float(row['fairy'])
             }
+            # Se guarda en el diccionario el tipo de ataque con el valor de efectividadd
             effectiveness_chart[attack_type] = effectiveness_values
     return effectiveness_chart
 
 
-def fights(number_of_teams: int, number_of_rivals: int):
+def fights(number_of_teams: int, number_of_rivals: int) -> dict:
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
+    # Creación de los equipos y rivales
     teams = team_gen.create_teams(number_of_teams)
     rivals = team_gen.create_teams(number_of_rivals)
     wins_per_team = {}
     for i, team in enumerate(teams, start=1):
         wins = 0
         for encounter in rivals:
-            winner = utils.combat.get_winner(team, encounter, effectiveness_chart) #Un sistema bastante simple, toma el ganador y le suma 1.
+            # Se obtiene el ganador de la pelea y se le suma 1 al contador de victorias
+            winner = utils.combat.get_winner(team, encounter, effectiveness_chart)
             if winner == team:
                 wins +=1
         wins_per_team[f'Equipo {i}'] = wins
+    # Ordenamiento del diccionario de victorias por equipo
     ordered_wins = list(wins_per_team.values())
     reversed_dicc = {}
+    # Se invierte el diccionario para poder ordenar las victorias
     for key in wins_per_team.keys():
         reversed_dicc[wins_per_team[key]] = key
     ordered_wins.sort(reverse=True)
