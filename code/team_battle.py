@@ -1,7 +1,6 @@
-import team_gen
-import utils.combat
+import team_gen as gen
+import utils.combat as combat
 import csv 
-import utils.team
 #Variables necesarias
 
 def read_effectiveness_chart(csv_file):
@@ -36,16 +35,16 @@ def read_effectiveness_chart(csv_file):
 
 def fights(number_of_teams: int, number_of_rivals: int):
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
-    teams = team_gen.create_teams(number_of_teams)
-    rivals = team_gen.create_teams(number_of_rivals)
+    teams = gen.create_teams(number_of_teams)
+    rivals = gen.create_teams(number_of_rivals)
     wins_per_team = {}
-    for i, team in enumerate(teams, start=1):
+    for team in teams:
         wins = 0
         for encounter in rivals:
-            winner = utils.combat.get_winner(team, encounter, effectiveness_chart) #Un sistema bastante simple, toma el ganador y le suma 1.
+            winner = combat.get_winner(team, encounter, effectiveness_chart) #Un sistema bastante simple, toma el ganador y le suma 1.
             if winner == team:
                 wins +=1
-        wins_per_team[f'Equipo {i}'] = wins
+        wins_per_team[team] = wins
     ordered_wins = list(wins_per_team.values())
     reversed_dicc = {}
     for key in wins_per_team.keys():
@@ -54,4 +53,6 @@ def fights(number_of_teams: int, number_of_rivals: int):
     final_dicc = {}
     for num in ordered_wins:
         final_dicc[reversed_dicc[num]] = num
-    return final_dicc, teams
+    return final_dicc
+
+print(fights(50, 400))
