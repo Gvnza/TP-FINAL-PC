@@ -97,7 +97,7 @@ class Team:
     def do_action(self, action: str, target: Move|int|None, defender: 'Team', effectiveness: dict[str, dict[str, float]]) -> None:
         """
         Executes an action.
-
+        
         Parameters:
         action (str): The action that the team will do. It can be 'attack' or 'switch'.
         target (Move|int|None): The move that the team will use if the action is 'attack', the index of the pokemon that

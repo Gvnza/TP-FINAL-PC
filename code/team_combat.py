@@ -55,5 +55,3 @@ def fights(number_of_teams: int, number_of_rivals: int):
     for num in ordered_wins:
         final_dicc[reversed_dicc[num]] = num
     return final_dicc
-
-peleas = fights(3, 5)
