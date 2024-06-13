@@ -35,24 +35,16 @@ def read_effectiveness_chart(csv_file):
 
 def fights(number_of_teams: int, number_of_rivals: int):
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
+    # Creación de los equipos y rivales
     teams = gen.create_teams(number_of_teams)
     rivals = gen.create_teams(number_of_rivals)
-    wins_per_team = {}
+    wins_per_team = {team: 0 for team in teams}
     for team in teams:
-        wins = 0
         for encounter in rivals:
+            # Se obtiene el ganador de la pelea y se le suma 1 al contador de victorias
             winner = combat.get_winner(team, encounter, effectiveness_chart) #Un sistema bastante simple, toma el ganador y le suma 1.
             if winner == team:
-                wins +=1
-        wins_per_team[team] = wins
-    ordered_wins = list(wins_per_team.values())
-    reversed_dicc = {}
-    for key in wins_per_team.keys():
-        reversed_dicc[wins_per_team[key]] = key
-    ordered_wins.sort(reverse=True)
-    final_dicc = {}
-    for num in ordered_wins:
-        final_dicc[reversed_dicc[num]] = num
+                wins_per_team[team] += 1
+    # Ordenamiento del diccionario de victorias por equipo
+    final_dicc = dict(sorted(wins_per_team.items(), key=lambda item: item[1], reverse=True))
     return final_dicc
-
-print(fights(50, 400))
