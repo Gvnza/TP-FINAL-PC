@@ -36,7 +36,7 @@ def read_effectiveness_chart(csv_file: str) -> dict:
             effectiveness_chart[attack_type] = effectiveness_values
     return effectiveness_chart
 
-def fights(teams, rivals):
+def fights(teams, rivals, epoch):
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
     wins_per_team = {team: 0 for team in teams}
     for team in teams:
@@ -47,5 +47,8 @@ def fights(teams, rivals):
             if winner == team:
                 wins_per_team[team] += 1
     final_dicc = dict(sorted(wins_per_team.items(), key=lambda item: item[1], reverse=True))
-    print(f'Número promedio de wins: {sum(list(final_dicc.values()))/50}' )
+    best_team = list(final_dicc.values())[:1]
+    print(f'Número promedio de victorias: {sum(list(final_dicc.values()))/50}' )
+    print(f'Mejor resultado: {best_team[0]}')
+    print(f'Época: {epoch}')
     return final_dicc

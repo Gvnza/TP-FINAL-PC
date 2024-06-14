@@ -32,10 +32,8 @@ def crossing(teams):
             pokemon_2 = teams_pokemons_2[j]
             if not pokemon_1 == pokemon_2:
                 if pokemon_1 in team or pokemon_2 in team:
-                    if pokemon_1 and pokemon_2 in team:
-                        for x in range(len(winner.pokemons), 0, -1):
-                                if winner.pokemons[x] not in team:
-                                    team.append(winner.pokemons[x])
+                    if pokemon_1 in team and pokemon_2 in team:
+                        continue
                     else:
                         team.append(pokemon_2) if pokemon_1 in team else team.append(pokemon_1)
                 else:
@@ -46,6 +44,11 @@ def crossing(teams):
                         team.append(pokemon_2) if r > 0.25 else team.append(pokemon_1)
             else:
                 team.append(pokemon_1)
+        if len(team) != 6:
+            while len(team) != 6:
+                choice = random.choice(winner.pokemons)
+                if choice not in team:
+                    team.append(choice)
         mutated_teams.append(Team(f'Equipo {i}', team, 0))
     return mutated_teams
 
