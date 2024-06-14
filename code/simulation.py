@@ -12,4 +12,4 @@ def main():
         resulsts = fights(mutated_teams, rivals, i)
         mutated_teams = crossing(resulsts)
     return mutated_teams
-print(main())
+main()
