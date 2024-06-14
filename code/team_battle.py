@@ -48,7 +48,5 @@ def fights(teams, rivals, epoch):
                 wins_per_team[team] += 1
     final_dicc = dict(sorted(wins_per_team.items(), key=lambda item: item[1], reverse=True))
     best_team = list(final_dicc.values())[:1]
-    print(f'Número promedio de victorias: {sum(list(final_dicc.values()))/50}' )
-    print(f'Mejor resultado: {best_team[0]}')
-    print(f'Época: {epoch}')
-    return final_dicc
+    print(f'ÉPOCA: {epoch} \t MEJOR RESULTADO: {best_team[0]} \t PROMEDIO DE VICTORIAS: {sum(list(final_dicc.values()))/50}')
+    return final_dicc, sum(list(final_dicc.values()))/50

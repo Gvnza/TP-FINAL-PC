@@ -27,7 +27,7 @@ def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
         for row in pokemon_reader:
             pokemon_moves = {}
             # Análisis de si el pokemon es legendario o no
-            if row['is_legendary'] != 1:
+            if int(row['is_legendary']) != 1:
                 pokemon_info = { #Lectura del archivo csv de pokemones, evitando legendarios
                     'pokedex_number': row['pokedex_number'], 'type1': row['type1'], 'type2': row['type2'],
                     'hp': int(row['hp']), 'attack': int(row['attack']), 'defense': int(row['defense']),
@@ -56,8 +56,7 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
     Returns: 
     teams: Los equipos procesados con las funciones dadas.
     '''
-    all_pokemon_objects = objects
-    all_pokemon_keys = list(all_pokemon_objects.keys())
+    all_pokemon_keys = list(objects.keys())
     # Por cada vez dentro de la cantidad pedida...
     teams = []
     for i in range(cuantity):
@@ -67,7 +66,7 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
         while len(team) < 6:
             pokemon_name = random.choice(all_pokemon_keys)
             # Guarda al pokemon en una variable
-            pokemon = all_pokemon_objects[pokemon_name]
+            pokemon = objects[pokemon_name]
             # Si el nombre del pokemon no esta en la lista de nombres de pokemones del equipo...
             if pokemon_name not in team_pokemon_names:
                 # Se agrega el pokemon al equipo y el nombre del pokemon a la lista de nombres de pokemones del equipo

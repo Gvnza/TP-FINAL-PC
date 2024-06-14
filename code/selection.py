@@ -4,6 +4,7 @@ from utils.pokemon import Pokemon
 from utils.team import Team
 from utils.combat import get_winner
 import team_gen as gen
+
 def parents_selection(teams):
     total_wins = sum(list(teams.values()))
     probability = {}
@@ -18,37 +19,58 @@ def parents_selection(teams):
         r2 = random.choices(population = keys, weights = values)[0]
     return r1, r2
 
-def crossing(teams):
+def crossing(teams, number, objects):
     effectiveness_chart = team_battle.read_effectiveness_chart('effectiveness_chart.csv')
     mutated_teams = []
-    for i in range(50):
-        team = []
+    for i in range(number):
         team_1, team_2 = parents_selection(teams)
         winner = get_winner(team_1, team_2, effectiveness_chart)
         teams_pokemons_1 = team_1.pokemons
         teams_pokemons_2 = team_2.pokemons
-        for j in range(6):
-            pokemon_1 = teams_pokemons_1[j]
-            pokemon_2 = teams_pokemons_2[j]
-            if not pokemon_1 == pokemon_2:
-                if pokemon_1 in team or pokemon_2 in team:
-                    if pokemon_1 in team and pokemon_2 in team:
-                        continue
-                    else:
-                        team.append(pokemon_2) if pokemon_1 in team else team.append(pokemon_1)
-                else:
-                    r = random.random()
-                    if winner == team_1:
-                        team.append(pokemon_1) if r > 0.25 else team.append(pokemon_2)
-                    else:
-                        team.append(pokemon_2) if r > 0.25 else team.append(pokemon_1)
-            else:
-                team.append(pokemon_1)
-        if len(team) != 6:
-            while len(team) != 6:
-                choice = random.choice(winner.pokemons)
-                if choice not in team:
-                    team.append(choice)
-        mutated_teams.append(Team(f'Equipo {i}', team, 0))
+        if teams_pokemons_1 != winner:
+            mutation = random.random()
+            if mutation < 0.003:
+                mutated = random.choice(objects)
+                while mutated in teams_pokemons_1:
+                    mutated = random.choice(objects)
+        mutated_teams.append(change_teams(teams_pokemons_1, teams_pokemons_2, i, winner.pokemons))
     return mutated_teams
 
+def improve_rivals(rivals, teams, objects):
+    first_200 = rivals[200:]
+    rivals.remove(rivals[300:])
+    random_100 = gen.create_teams(100, objects)
+    mutated_100 = []
+    for i in range(100):
+        rival = random.choice(rivals)
+        random_team = random.choice(teams)
+        winner = get_winner(rival, random_team)
+        if random_team == rival:
+            mutated_100.append(Team(f'Equipo: {i}', rival, 0))
+        else:
+            mutated_100.append(change_teams(rival.pokemons, random_team.pokemons, i, winner.pokemons))
+    return [first_200, mutated_100, random_100]
+
+def change_teams(team_1: list, team_2: list, i: int, winner: list):
+    team_set = set(team_1 + team_2)
+    set_list = list(team_set)
+    x = 0
+    final_team = []
+    while len(final_team) < 6 and len(set_list) > 0:
+        if random.random() < 0.75:
+            selected_team = winner
+        else:
+            selected_team = team_2 if winner == team_1 else team_1
+            not_selected = team_2 if winner == team_2 else team_1
+        chosen_pokemon = selected_team[x]
+        if chosen_pokemon in set_list and chosen_pokemon not in final_team:
+            final_team.append(chosen_pokemon)
+            set_list.remove(chosen_pokemon)
+            x += 1
+        else:
+            chosen_pokemon = not_selected[x]
+            if chosen_pokemon in set_list and chosen_pokemon not in final_team:
+                final_team.append(chosen_pokemon)
+                set_list.remove(chosen_pokemon)
+                x += 1
+    return Team(f'Equipo {i}', final_team, 0)
