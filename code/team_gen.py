@@ -42,6 +42,7 @@ def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
                 
                 # Creación de los objetos de los pokemones
                 pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+    
     return pokemon_objects # Retorna los objetos
 
 #Nota: Se podria evitar el if move != '': si se evita que se procesen pokemones del archivo csv que no tengan movimientos, posible cambio a tener en cuenta. -Gonza
@@ -73,4 +74,5 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
                 team.append(pokemon)
                 team_pokemon_names.append(pokemon_name)
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
+    
     return teams

@@ -3,40 +3,60 @@ from team_gen import create_teams, define_pokemons_objects
 from team_battle import fights, read_effectiveness_chart
 import time
 import random
+
 def main():
     average_list = []
-    epocas_de_cambio = []
-    tiempo_inicial = time.time()
-    effect = read_effectiveness_chart('effectiveness_chart.csv')
+    key_epochs = []
+    time_per_epoch = {}
+    init_time = time.time()
+    #Recoleccion de datos, medianamente irrelevante.
+
     pokemon_objects = define_pokemons_objects()
     teams = create_teams(50, pokemon_objects)
     rivals = create_teams(400, pokemon_objects)
+    #Inicializacion de los rivales y los equipos.
     resulsts, average = fights(teams, rivals, 0) 
     average_list.append(average)
+    #Los resultados de las batallas
     mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+    #Mutar
+
     tiempo1 = time.time()
-    minutos = (tiempo1-tiempo_inicial)//60
-    print(f'La época 0 tardo {minutos} minuto(s) y {round(tiempo1-tiempo_inicial-minutos*60)} segundo(s)')
+    minutes = (tiempo1 - init_time)//60
+    print(f'La época 0 tardo {minutes:.0f} minuto(s) y {tiempo1 - init_time - minutes*60:.0f} segundo(s)')
     print('-'*70)
+    time_per_epoch[0] = tiempo1 - init_time
+    #Basicamente, muestra de datos y recoleccion.
+
     for i in range(1, 51):
-        tiempo = time.time()
+        epoch_begg = time.time()
+
         resulsts, average = fights(mutated_teams, rivals, i)
         average_list.append(average)
+        #Por ahora, lo mismo que el proceso de la epoca 0.
         previous_averages = (sum(average_list[i-3:i])/3)
         if previous_averages + 5 >= average >= previous_averages - 5:
-            if random.random() >= 0.45 and i / 5 == i // 5:
-                    print('CAMBIO A LOS RIVALES!\nCambios: Mutan 50, 50 se cruzan con los equipos de su época. Se mantienen 300.')
-                    rivals = improve_rivals(rivals, resulsts, pokemon_objects, effect)
+            if random.random() >= 0.45:
+                    rivals = improve_rivals(rivals, pokemon_objects)
                     mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
-                    epocas_de_cambio.append(i)
+                    key_epochs.append(i)
+                    print('ALERTA! Los rivales han mejorado!')
+            else:
+                mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
         else:
             mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
-        tiempo1 = time.time()
-        minutos = (tiempo1-tiempo)//60
-        print(f'La época {i} tardo {minutos} minuto(s) y {round(tiempo1-tiempo-minutos*60)} segundo(s).')
+
+        epoch_end = time.time()
+        minutes = (epoch_end - epoch_begg)//60
+        print(f'La época {i} tardo {minutes:.0f} minuto(s) y {epoch_end - epoch_begg - minutes*60:.0f} segundo(s).')
         print('-'*70)
-    tiempo_final = time.time()
-    minutos = (tiempo_final - tiempo_inicial)//60
-    print(f'La simulacion tardó {minutos} minuto(s) y {round(tiempo_final-tiempo_inicial-minutos*60)} segundo(s).')
-    return mutated_teams
-main()
+        time_per_epoch[i] = epoch_end - epoch_begg
+    
+    end_time = time.time()
+    minutes = (end_time - init_time)//60
+    print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
+    
+    return key_epochs, end_time, time_per_epoch, average_list
+
+if __name__ == '__main__':
+    main()
