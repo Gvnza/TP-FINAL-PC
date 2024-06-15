@@ -74,7 +74,3 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
                 team_pokemon_names.append(pokemon_name)
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
     return teams
-
-
-#NOTA: Si bien el codigo se redujo bastante en cantidad de lineas, la complejidad no deberia haberse visto tan afectada, deberia haber mejorado, pero tampoco es demasiado.
-#      Un problema recurrente de los TPs por lo que estuve viendo de los demas, es que tarda mucho en correr. Intentemos hacer el codigo lo mas optimizado posible. -Gonza

@@ -36,41 +36,47 @@ def crossing(teams, number, objects):
         mutated_teams.append(change_teams(teams_pokemons_1, teams_pokemons_2, i, winner.pokemons))
     return mutated_teams
 
-def improve_rivals(rivals, teams, objects):
-    first_200 = rivals[200:]
-    rivals.remove(rivals[300:])
-    random_100 = gen.create_teams(100, objects)
-    mutated_100 = []
-    for i in range(100):
-        rival = random.choice(rivals)
-        random_team = random.choice(teams)
-        winner = get_winner(rival, random_team)
+def improve_rivals(rivals, teams, objects, chart):
+    first_300 = rivals[:300]
+    new_rivals = rivals[350:400]
+    random_50 = gen.create_teams(50, objects)
+    mutated_50 = []
+    for i in range(50):
+        rival = random.choice(new_rivals)
+        random_team = random.choice(list(teams.keys()))
+        winner = get_winner(rival, random_team, chart)
         if random_team == rival:
-            mutated_100.append(Team(f'Equipo: {i}', rival, 0))
+            mutated_50.append(Team(f'Equipo: {i}', rival, 0))
         else:
-            mutated_100.append(change_teams(rival.pokemons, random_team.pokemons, i, winner.pokemons))
-    return [first_200, mutated_100, random_100]
+            mutated_50.append(change_teams(rival.pokemons, random_team.pokemons, i, winner.pokemons))
+    final_list = []
+    for w in range(50):
+        for q in range(6):
+            final_list.append(first_300[q*50:50 + q*50][w])
+        final_list.append(mutated_50[w])
+        final_list.append(random_50[w])
+    
+    return final_list
 
 def change_teams(team_1: list, team_2: list, i: int, winner: list):
     team_set = set(team_1 + team_2)
     set_list = list(team_set)
+    set_names = []
+    for poke in set_list:
+        set_names.append(poke.name)
     x = 0
     final_team = []
+    final_team_names = []
     while len(final_team) < 6 and len(set_list) > 0:
         if random.random() < 0.75:
             selected_team = winner
         else:
             selected_team = team_2 if winner == team_1 else team_1
-            not_selected = team_2 if winner == team_2 else team_1
         chosen_pokemon = selected_team[x]
-        if chosen_pokemon in set_list and chosen_pokemon not in final_team:
+        if chosen_pokemon.name in set_names and chosen_pokemon.name not in final_team_names:
             final_team.append(chosen_pokemon)
             set_list.remove(chosen_pokemon)
+            final_team_names.append(chosen_pokemon.name)
+            set_names.remove(chosen_pokemon.name)
             x += 1
-        else:
-            chosen_pokemon = not_selected[x]
-            if chosen_pokemon in set_list and chosen_pokemon not in final_team:
-                final_team.append(chosen_pokemon)
-                set_list.remove(chosen_pokemon)
-                x += 1
     return Team(f'Equipo {i}', final_team, 0)

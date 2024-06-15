@@ -1,5 +1,5 @@
 import team_gen as gen
-import utils.combat as combat
+from utils.combat import get_winner
 import csv 
 
 def read_effectiveness_chart(csv_file: str) -> dict:
@@ -42,7 +42,7 @@ def fights(teams, rivals, epoch):
     for team in teams:
         for encounter in rivals:
             # Determina el ganador del combate
-            winner = combat.get_winner(team, encounter, effectiveness_chart)
+            winner = get_winner(team, encounter, effectiveness_chart)
             # Incrementa el contador de victorias si el equipo actual es el ganador
             if winner == team:
                 wins_per_team[team] += 1

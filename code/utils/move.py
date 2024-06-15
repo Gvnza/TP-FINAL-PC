@@ -63,4 +63,7 @@ class Move:
         if defending_pokemon.type2 is not None:
             effectiveness_bonus *= effectiveness[defending_pokemon.type2][self.type]
 
+        if random.random() <= 0.04:
+            return (((2*attacker_pokemon.level/5) * self.power * a/d)/50 + 2) * stab * effectiveness_bonus * 1.5
+        
         return (((2*attacker_pokemon.level/5) * self.power * a/d)/50 + 2) * stab * effectiveness_bonus
