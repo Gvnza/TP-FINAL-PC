@@ -4,7 +4,7 @@ from utils.pokemon import Pokemon
 from utils.team import Team
 from utils.combat import get_winner
 import team_gen as gen
-
+from termcolor import cprint
 def parents_selection(teams):
     total_wins = sum(list(teams.values()))
     
@@ -13,41 +13,43 @@ def parents_selection(teams):
         probability[key] = int(teams[key])/total_wins
     keys = list(probability.keys())
     values = list(probability.values())
-
+    #Tomo las victorias totales, y saco el % de wins que representa cada equipo (se podría implementar un incremento/decremento dependiendo la posicion)
     random_team_1 = random.choices(population = keys, weights = values)[0]
     random_team_2 = random.choices(population = keys, weights = values)[0]
-
+    #Se eligen dos equipos segun las posibilidades
     while random_team_2 == random_team_1:
         random_team_2 = random.choices(population = keys, weights = values)[0]
+        #Me aseguro que no sean dos equipos iguales
     return random_team_1, random_team_2
 
 def crossing(teams, number, objects):
     mutation_counter = 0
     effectiveness_chart = team_battle.read_effectiveness_chart('effectiveness_chart.csv')
     mutated_teams = []
-
+    #Preparación de variables
     for i in range(number):
         team_1, team_2 = parents_selection(teams)
         winner = get_winner(team_1, team_2, effectiveness_chart)
         loser = team_2 if team_1 == winner else team_1
-
-        teams_pokemons_1 = team_1.pokemons
-        teams_pokemons_2 = team_2.pokemons
-        
-        for _ in loser.pokemons:
-            if random.random() < 0.003:
+        #Hago pelear a los dos equipos elegidos, y al ganador le doy "privilegios", tambien determino el perdedor
+        #Hago una lista con sus pokemones
+        loser_mutated = []
+        for j in range(len(loser.pokemons)):
+            if random.random() <= 0.003:
+                #Por cada pokemon del perdedor hay un 3% de probabilidades de que muten
                 pokemon_mutation = random.choice(objects)
                 while pokemon_mutation in loser.pokemons:
                     pokemon_mutation = random.choice(objects)
-
-                teams_pokemons_1.remove(random.choice(teams_pokemons_1))
-                teams_pokemons_1.append(pokemon_mutation)
+                    #Me aseguro de que no este ya en el equipo
+                #Le saco el pokemon que muta
+                loser.pokemons[j] = pokemon_mutation
                 mutation_counter += 1
+            loser_mutated.append(loser.pokemons[j])
 
-        mutated_teams.append(mutate_teams(teams_pokemons_1, teams_pokemons_2, i, winner.pokemons))
+        mutated_teams.append(mutate_teams(winner.pokemons, loser_mutated, i))
 
     if mutation_counter > 0:
-        print(f'Han habido {mutation_counter} mutacione(s) pokemon!')
+        cprint(f'Han habido {mutation_counter} mutacione(s) pokemon!', 'yellow', 'on_black')
 
     return mutated_teams
 
@@ -65,8 +67,8 @@ def improve_rivals(rivals, objects):
     
     return final_list
 
-def mutate_teams(team_1: list, team_2: list, i: int, winner: list):
-    team_set = set(team_1 + team_2)
+def mutate_teams(winner: list, loser: list, i: int):
+    team_set = set(winner + loser)
     set_list = list(team_set)
     set_names = []
     
@@ -81,7 +83,7 @@ def mutate_teams(team_1: list, team_2: list, i: int, winner: list):
         if random.random() < 0.75:
             selected_team = winner
         else:
-            selected_team = team_2 if winner == team_1 else team_1
+            selected_team = loser
     
         chosen_pokemon = selected_team[x]
         if chosen_pokemon.name in set_names and chosen_pokemon.name not in final_team_names:

@@ -1,7 +1,7 @@
 import team_gen as gen
 from utils.combat import get_winner
 import csv 
-
+from termcolor import cprint
 def read_effectiveness_chart(csv_file: str) -> dict:
     effectiveness_chart = {}
     # Abriendo el archivo csv
