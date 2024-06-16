@@ -4,48 +4,6 @@ import utils.pokemon as pokemon
 import utils.move as move
 import utils.team
 
-
-def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
-    '''
-    Crea todos los pokemones en forma de objetos
-
-    Returns:
-    Todos los pokemones (a excepcion de legendarios) en forma de diccionario. Ej; {... , "Charmander" : [objeto]}
-    '''
-    pokemon_objects = {}
-    moves_data = {}
-    # Abre los archivos csv de pokemones y movimientos
-    with open('pokemons.csv', newline='') as pokemonfile:
-        with open('moves.csv', newline='') as movesfile:
-            # Crea un diccionario con los movimientos
-            moves_reader = csv.DictReader(movesfile)
-            for row in moves_reader: #Lectura del archivo csv de movimientos
-                # Crea un diccionario con los datos (de cada columna) de movimientos
-                moves_data[row['name']] = {'type' : row['type'], 'category' : row['category'],
-                    'pp' : int(row['pp']), 'power' : int(row['power']), 'accuracy' : int(row['accuracy'])}
-        # Crea un diccionario con los pokemones
-        pokemon_reader = csv.DictReader(pokemonfile)
-        for row in pokemon_reader:
-            pokemon_moves = {}
-            # Análisis de si el pokemon es legendario o no
-            if int(row['is_legendary']) != 1:
-                pokemon_info = { #Lectura del archivo csv de pokemones, evitando legendarios
-                    'pokedex_number': row['pokedex_number'], 'type1': row['type1'], 'type2': row['type2'],
-                    'hp': int(row['hp']), 'attack': int(row['attack']), 'defense': int(row['defense']),
-                    'sp_attack': int(row['sp_attack']), 'sp_defense': int(row['sp_defense']), 'speed': int(row['speed']),
-                    'generation': int(row['generation']), 'height_m': row['height_m'], 'weight_kg': row['weight_kg'],
-                    'is_legendary': row['is_legendary'], 'moves' : row['moves'].split(';') }
-                
-                # Por cada movimiento dentro de la categoría movimientos...
-                for move in pokemon_info['moves']:
-                    if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
-                        pokemon_moves[move] = moves_data[move]
-                
-                # Creación de los objetos de los pokemones
-                pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
-    
-    return pokemon_objects # Retorna los objetos
-
 #Nota: Se podria evitar el if move != '': si se evita que se procesen pokemones del archivo csv que no tengan movimientos, posible cambio a tener en cuenta. -Gonza
 def define_pokemons_objects_with_legendaries() -> Dict[str, pokemon.Pokemon]:
     '''
@@ -54,7 +12,8 @@ def define_pokemons_objects_with_legendaries() -> Dict[str, pokemon.Pokemon]:
     Returns:
     Todos los pokemones (a excepcion de legendarios) en forma de diccionario. Ej; {... , "Charmander" : [objeto]}
     '''
-    pokemon_objects = {}
+    all_pokemon_objects = {}
+    pokemon_objects_without_legendaries = {}
     moves_data = {}
     # Abre los archivos csv de pokemones y movimientos
     with open('pokemons.csv', newline='') as pokemonfile:
@@ -81,10 +40,13 @@ def define_pokemons_objects_with_legendaries() -> Dict[str, pokemon.Pokemon]:
                 if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
                     pokemon_moves[move] = moves_data[move]
             
-            # Creación de los objetos de los pokemones
-            pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+            all_pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
 
-    return pokemon_objects # Retorna los objetos
+            if int(row['is_legendary']) != 1:
+                # Creación de los objetos de los pokemones
+                pokemon_objects_without_legendaries[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+
+    return all_pokemon_objects, pokemon_objects_without_legendaries # Retorna los objetos
 
 def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
     '''
