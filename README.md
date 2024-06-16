@@ -4,6 +4,8 @@ Trabajo final pensamiento computacional.
 
 Ideas:
 
+    Que todos los rivales tengan un legendario
+
     Que los pokemones que muten se queden obligatoriamente, es decir, que al elegir dos equipos, 
     si hay algun pokemon que mute, que se asegure que quede en el equipo final de ese cruce.
 
