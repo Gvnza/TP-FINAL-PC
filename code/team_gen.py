@@ -5,7 +5,7 @@ import utils.move as move
 import utils.team
 
 
-def define_pokemons_objects(flag) -> Dict[str, pokemon.Pokemon]:
+def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
     '''
     Crea todos los pokemones en forma de objetos
 
@@ -28,36 +28,23 @@ def define_pokemons_objects(flag) -> Dict[str, pokemon.Pokemon]:
         pokemon_reader = csv.DictReader(pokemonfile)
         for row in pokemon_reader:
             pokemon_moves = {}
-            # Análisis de si el pokemon es legendario o no
-            if flag == False:
-                if int(row['is_legendary']) != 1:
-                    pokemon_info = { #Lectura del archivo csv de pokemones, evitando legendarios
-                        'pokedex_number': row['pokedex_number'], 'type1': row['type1'], 'type2': row['type2'],
-                        'hp': int(row['hp']), 'attack': int(row['attack']), 'defense': int(row['defense']),
-                        'sp_attack': int(row['sp_attack']), 'sp_defense': int(row['sp_defense']), 'speed': int(row['speed']),
-                        'generation': int(row['generation']), 'height_m': row['height_m'], 'weight_kg': row['weight_kg'],
-                        'is_legendary': row['is_legendary'], 'moves' : row['moves'].split(';')}
-                    
-                    # Por cada movimiento dentro de la categoría movimientos...
-                    for move in pokemon_info['moves']:
-                        if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
-                            pokemon_moves[move] = moves_data[move]
-                    
-                    # Creación de los objetos de los pokemones
-                    pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
-                else:
-                    pokemon_info = { #Lectura del archivo csv de pokemones, evitando legendarios
-                        'pokedex_number': row['pokedex_number'], 'type1': row['type1'], 'type2': row['type2'],
-                        'hp': int(row['hp']), 'attack': int(row['attack']), 'defense': int(row['defense']),
-                        'sp_attack': int(row['sp_attack']), 'sp_defense': int(row['sp_defense']), 'speed': int(row['speed']),
-                        'generation': int(row['generation']), 'height_m': row['height_m'], 'weight_kg': row['weight_kg'],
-                        'is_legendary': row['is_legendary'], 'moves' : row['moves'].split(';')}
-                    
-                    for move in pokemon_info['moves']:
-                        if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
-                            pokemon_moves[move] = moves_data[move]
+            pokemon_info = { #Lectura del archivo csv de pokemones, evitando legendarios
+                    'pokedex_number': row['pokedex_number'], 'type1': row['type1'], 'type2': row['type2'],
+                    'hp': int(row['hp']), 'attack': int(row['attack']), 'defense': int(row['defense']),
+                    'sp_attack': int(row['sp_attack']), 'sp_defense': int(row['sp_defense']), 'speed': int(row['speed']),
+                    'generation': int(row['generation']), 'height_m': row['height_m'], 'weight_kg': row['weight_kg'],
+                    'is_legendary': row['is_legendary'], 'moves' : row['moves'].split(';')}
+            
+            for move in pokemon_info['moves']:
+                    if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
+                        pokemon_moves[move] = moves_data[move]
 
-                    legendary_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+        # Análisis de si el pokemon es legendario o no
+            if int(row['is_legendary']) != 1:
+                # Creación de los objetos de los pokemones
+                pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+            else:
+                legendary_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
 
     return pokemon_objects, legendary_objects # Retorna los objetos
 
@@ -94,7 +81,7 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
     return teams
 
 
-def create_teams_with_legendaries(cuantity: int, objects, legendaries):
+def create_teams_with_legendaries(cuantity: int, not_legendaries, legendaries):
     
     '''
     Crea todos los equipos. Acepta un legendario por equipo
@@ -105,7 +92,7 @@ def create_teams_with_legendaries(cuantity: int, objects, legendaries):
     Returns: 
     teams: Los equipos procesados con las funciones dadas.
     '''
-    all_pokemon_keys = list(objects.keys() + legendaries.keys())
+    all_pokemon_keys = list(not_legendaries.keys()) + list(legendaries.keys())
     legendary_pokemon_keys = list(legendaries.keys())
     # Por cada vez dentro de la cantidad pedida...
     teams = []
@@ -118,10 +105,12 @@ def create_teams_with_legendaries(cuantity: int, objects, legendaries):
         while len(team) < 6:
             if count == 0:
                 pokemon_name = random.choice(legendary_pokemon_keys)
+                pokemon = legendaries[pokemon_name]
             else:
                 pokemon_name = random.choice(all_pokemon_keys)
+                pokemon = legendaries[pokemon_name] if pokemon_name in legendary_pokemon_keys else not_legendaries[pokemon_name]  
             # Guarda al pokemon en una variable
-            pokemon = objects[pokemon_name]
+            
             # Si el nombre del pokemon no esta en la lista de nombres de pokemones del equipo...
             if pokemon_name not in team_pokemon_names:
                 if pokemon.is_legendary == 1:
@@ -133,7 +122,7 @@ def create_teams_with_legendaries(cuantity: int, objects, legendaries):
                             flag = True
                     else:
                         while pokemon.is_legendary == 1:
-                            pokemon_name = random.choice(all_pokemon_keys)
+                            pokemon_name = random.choice(not_legendaries.keys())
                         team.append(pokemon)
                         team_pokemon_names.append(pokemon_name)
                 else:

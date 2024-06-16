@@ -1,5 +1,5 @@
 from selection import crossing, improve_rivals, improve_stats
-from team_gen import create_teams, define_pokemons_objects, define_pokemons_objects_with_legendaries, create_teams_with_legendaries
+from team_gen import create_teams, define_pokemons_objects, create_teams_with_legendaries
 from team_battle import fights
 import time
 import random
@@ -34,7 +34,9 @@ def main():
 
     for i in range(1, 51):
         epoch_begg = time.time()
-
+        rival_0 = rivals[0].pokemons
+        for poke in rival_0:
+            print(poke.name)
         resulsts, average, rivals_results = fights(mutated_teams, rivals, i)
         average_list.append(average)
         #Por ahora, lo mismo que el proceso de la epoca 0.
@@ -70,16 +72,7 @@ def main():
     minutes = (end_time - init_time)//60
     print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
     #Mas datos 
-    print("+-----+-----+")
-    print("| Epc | Win |")
-    print("+-----+-----+")
-    for i in range(50):
-        if i < 10:
-            print("| ", i, "  |", " ", average_list[i], "  |")
-            print("+-----+-----+")
-        else:
-            print("| ", i, " |", " ", average_list[i], "  |")
-            print("+-----+-----+")
+    
     return key_epochs, end_time, time_per_epoch, average_list
 
 if __name__ == '__main__':
