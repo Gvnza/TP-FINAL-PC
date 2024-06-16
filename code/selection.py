@@ -54,16 +54,16 @@ def crossing(teams, number, objects):
         mutated_teams.append(mutate_teams(winner.pokemons, loser_mutated, i))
 
     if mutation_counter > 0:
-        cprint(f'Han habido {mutation_counter} mutacione(s) pokemon!', 'yellow')
+        cprint(f'Ha(n) habido {mutation_counter} pokemutacion(es)!', 'yellow')
 
     return mutated_teams
 
 
-def improve_rivals(objects, results):
+def improve_rivals(objects, legendaries, results):
     # Se toman los primeros 350 rivales
     first_350_rivals = list(results.keys())[:350]
     # Se crean 50 nuevos rivales para completar los 400
-    random_50_rivals = gen.create_teams_with_legendaries(50, objects) 
+    random_50_rivals = gen.create_teams_with_legendaries(50, objects, legendaries) 
     final_list = []
 
     for w in range(50):
@@ -75,6 +75,16 @@ def improve_rivals(objects, results):
     
     return final_list
 
+def improve_stats(rivals):
+    for team in rivals:
+        for pokemon in team.pokemons:
+            pokemon.max_hp += 2
+            pokemon.attack += 2
+            pokemon.defense += 2
+            pokemon.sp_attack += 2
+            pokemon.sp_defense += 2
+            pokemon.speed += 2
+    return rivals
 
 def mutate_teams(winner: list, loser: list, i: int):
     team_set = set(winner + loser)

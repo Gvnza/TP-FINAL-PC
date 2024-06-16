@@ -49,7 +49,7 @@ class Move:
         Returns:
         float: The damage that the move would do to the defending pokemon.
         """
-        if self.accuracy < random.random():
+        if self.accuracy < random.random()*100:
             return 0
         if self.category == 'physical':
             a = attacker_pokemon.attack
