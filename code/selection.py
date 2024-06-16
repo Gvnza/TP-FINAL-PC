@@ -5,6 +5,8 @@ from utils.team import Team
 from utils.combat import get_winner
 import team_gen as gen
 from termcolor import cprint
+
+
 def parents_selection(teams):
     total_wins = sum(list(teams.values()))
     
@@ -22,6 +24,7 @@ def parents_selection(teams):
         #Me aseguro que no sean dos equipos iguales
     return random_team_1, random_team_2
 
+
 def crossing(teams, number, objects):
     mutation_counter = 0
     effectiveness_chart = team_battle.read_effectiveness_chart('effectiveness_chart.csv')
@@ -31,8 +34,10 @@ def crossing(teams, number, objects):
         team_1, team_2 = parents_selection(teams)
         winner = get_winner(team_1, team_2, effectiveness_chart)
         loser = team_2 if team_1 == winner else team_1
+
         #Hago pelear a los dos equipos elegidos, y al ganador le doy "privilegios", tambien determino el perdedor
-        #Hago una lista con sus pokemones
+        #Hago una lista con sus pokemones 
+
         loser_mutated = []
         for j in range(len(loser.pokemons)):
             if random.random() <= 0.003:
@@ -49,29 +54,33 @@ def crossing(teams, number, objects):
         mutated_teams.append(mutate_teams(winner.pokemons, loser_mutated, i))
 
     if mutation_counter > 0:
-        cprint(f'Han habido {mutation_counter} mutacione(s) pokemon!', 'yellow', 'on_black')
+        cprint(f'Han habido {mutation_counter} mutacione(s) pokemon!', 'yellow')
 
     return mutated_teams
 
-def improve_rivals(rivals, objects):
-    first_350_rivals = rivals[:350]
-    random_50_rivals = gen.create_teams(50, objects)
 
+def improve_rivals(objects, results):
+    # Se toman los primeros 350 rivales
+    first_350_rivals = list(results.keys())[:350]
+    # Se crean 50 nuevos rivales para completar los 400
+    random_50_rivals = gen.create_teams_with_legendaries(50, objects) 
     final_list = []
-    for w in range(50):
 
+    for w in range(50):
+        
         final_list.append(random_50_rivals[w])
         
         for q in range(7):
-            final_list.append(first_350_rivals[q*50:50 + q*50][w])
+            final_list.append(first_350_rivals[q * 50 : 50 + q * 50][w])
     
     return final_list
+
 
 def mutate_teams(winner: list, loser: list, i: int):
     team_set = set(winner + loser)
     set_list = list(team_set)
     set_names = []
-    
+
     for poke in set_list:
         set_names.append(poke.name)
     
@@ -80,16 +89,13 @@ def mutate_teams(winner: list, loser: list, i: int):
     final_team_names = []
     
     while len(final_team) < 6 and len(set_list) > 0:
-        if random.random() < 0.75:
-            selected_team = winner
-        else:
-            selected_team = loser
+        selected_team = winner if random.random() < 0.7 else loser
     
         chosen_pokemon = selected_team[x]
         if chosen_pokemon.name in set_names and chosen_pokemon.name not in final_team_names:
             set_names.remove(chosen_pokemon.name)
             set_list.remove(chosen_pokemon)
-
+            
             final_team.append(chosen_pokemon)
             final_team_names.append(chosen_pokemon.name)
             x += 1

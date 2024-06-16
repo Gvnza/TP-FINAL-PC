@@ -2,6 +2,8 @@ import team_gen as gen
 from utils.combat import get_winner
 import csv 
 from termcolor import cprint
+
+
 def read_effectiveness_chart(csv_file: str) -> dict:
     effectiveness_chart = {}
     # Abriendo el archivo csv
@@ -28,10 +30,11 @@ def read_effectiveness_chart(csv_file: str) -> dict:
 
     return effectiveness_chart
 
+
 def fights(teams, rivals, epoch):
     effectiveness_chart = read_effectiveness_chart('effectiveness_chart.csv')
     wins_per_team = {team: 0 for team in teams}
-
+    wins_per_rival = {rival: 0 for rival in rivals}
     for team in teams:
         for encounter in rivals:
             # Determina el ganador del combate
@@ -39,10 +42,12 @@ def fights(teams, rivals, epoch):
             # Incrementa el contador de victorias si el equipo actual es el ganador
             if winner == team:
                 wins_per_team[team] += 1
+            else:
+                wins_per_rival[encounter] += 1
 
-    final_dicc = dict(sorted(wins_per_team.items(), key=lambda item: item[1], reverse=True))
-    
-    best_team = list(final_dicc.values())[:1]
-    print(f'ÉPOCA: {epoch} \t MEJOR RESULTADO: {best_team[0]} \t PROMEDIO DE VICTORIAS: {sum(list(final_dicc.values()))/50}')
+    final_dicc_teams = dict(sorted(wins_per_team.items(), key=lambda item: item[1], reverse=True))
+    final_dicc_rivals = dict(sorted(wins_per_rival.items(), key=lambda item: item[1], reverse=True))
+    best_team = list(final_dicc_teams.values())[:1]
+    print(f'ÉPOCA: {epoch} \t MEJOR RESULTADO: {best_team[0]} \t PROMEDIO DE VICTORIAS: {sum(list(final_dicc_teams.values()))/50}')
 
-    return final_dicc, sum(list(final_dicc.values()))/50
+    return final_dicc_teams, sum(list(final_dicc_teams.values()))/50, final_dicc_rivals

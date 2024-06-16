@@ -9,9 +9,9 @@ Ideas:
 
     Mejorar los rivales de base; Tomar 800, hacerlos pelear y tomar los mejores 400. Por otro lado, es mucha carga (sería lo equivalente a las peleas de 32 epocas).
     Por otro lado, si lo logramos optimizar, serian 16.02 epocas. Se puede hacer recorriendolos desde [i+1].
-
+    
     Ajustes al sistema de mejora de los rivales.
-
+    
     Tomar al mejor equipo de la ultima epoca con dos criterios y un sistema de "puntos". El primero seria segun cuantos combates gano contra los rivales.
     El segundo contaria cuantas veces gano contra los demas equipos.
     Bonus: Se podría agregar uno mas que los enfrente a los campeones, pero al ser combates mas dificiles, puede no afectar mucho, habría que ver.
