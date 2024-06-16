@@ -17,14 +17,17 @@ def main():
     pokemon_objects, legendaries = define_pokemons_objects()
     teams = create_teams(50, pokemon_objects)
     rivals = create_teams_with_legendaries(400, pokemon_objects, legendaries)
+    rival_0 = rivals[0].pokemons
+    for poke in rival_0:
+        print(poke.name)
+        print(poke.is_legendary)
     #Inicializacion de los rivales y los equipos.
     print('-'*70)
     resulsts, average, rivals_results = fights(teams, rivals, 0) 
     average_list.append(average)
     #Los resultados de las batallas
-    mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+    mutated_teams = crossing(resulsts, 50, pokemon_objects)
     #Mutar
-
     tiempo1 = time.time()
     minutes = (tiempo1 - init_time)//60
     print(f'La época 0 tardo {minutes:.0f} minuto(s) y {tiempo1 - init_time - minutes*60:.0f} segundo(s)')
@@ -34,32 +37,30 @@ def main():
 
     for i in range(1, 51):
         epoch_begg = time.time()
-        rival_0 = rivals[0].pokemons
-        for poke in rival_0:
-            print(poke.name)
         resulsts, average, rivals_results = fights(mutated_teams, rivals, i)
-        average_list.append(average)
+        
         #Por ahora, lo mismo que el proceso de la epoca 0.
         previous_averages = (sum(average_list[i-3:i])/3)
+        average_list.append(average)
         #Proceso de mejora de los rivales
         if previous_averages + 7 >= average >= previous_averages - 7:
             if random.random() >= 0.45:
                 if 10 >= counter and average >= 335:
                     rivals = improve_stats(rivals)
-                    mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+                    mutated_teams = crossing(resulsts, 50, pokemon_objects)
                     stats_improvement_epochs.append(i)
                     cprint('ALERTA! Los rivales han aumentado sus pokestats!', 'red')
                     counter += 1
                 else:
                     rivals = improve_rivals(pokemon_objects, legendaries, rivals_results)
-                    mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+                    mutated_teams = crossing(resulsts, 50, pokemon_objects)
                     cprint('ALERTA! Los rivales han pokemutado!', 'red')
                     key_epochs.append(i)
                 #Se mejoran, se muestra un aviso en la terminal y se guarda el dato 
             else:
-                mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+                mutated_teams = crossing(resulsts, 50, pokemon_objects)
         else:
-            mutated_teams = crossing(resulsts, 50, list(pokemon_objects.values()))
+            mutated_teams = crossing(resulsts, 50, pokemon_objects)
 
         epoch_end = time.time()
         minutes = (epoch_end - epoch_begg)//60

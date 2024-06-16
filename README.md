@@ -21,6 +21,10 @@ Ideas:
     Hacer un grafico de los tipos de la primer generacion de rivales y de equipos y de la ultima, y comparar como evolucionaron los tipos y porque lo hicieron
     de esa forma.
 
+    Quedarse siempre con las mutaciones
+
+    Todos los rivales legendarios
+
     Traer (de alguna manera, de algun lugar) equipos competitivos o "meta" y fijarse que tan aptos son los equipos finales y que tanto se parecen a estos equipos.
     Esto sería bastante dificil igual
 

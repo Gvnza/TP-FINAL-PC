@@ -78,12 +78,7 @@ def improve_rivals(objects, legendaries, results):
 def improve_stats(rivals):
     for team in rivals:
         for pokemon in team.pokemons:
-            pokemon.max_hp += 2
-            pokemon.attack += 2
-            pokemon.defense += 2
-            pokemon.sp_attack += 2
-            pokemon.sp_defense += 2
-            pokemon.speed += 2
+            pokemon.level += 2
     return rivals
 
 def mutate_teams(winner: list, loser: list, i: int):
@@ -100,7 +95,6 @@ def mutate_teams(winner: list, loser: list, i: int):
     
     while len(final_team) < 6 and len(set_list) > 0:
         selected_team = winner if random.random() < 0.7 else loser
-    
         chosen_pokemon = selected_team[x]
         if chosen_pokemon.name in set_names and chosen_pokemon.name not in final_team_names:
             set_names.remove(chosen_pokemon.name)

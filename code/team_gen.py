@@ -4,7 +4,6 @@ import utils.pokemon as pokemon
 import utils.move as move
 import utils.team
 
-
 def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
     '''
     Crea todos los pokemones en forma de objetos
@@ -12,8 +11,8 @@ def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
     Returns:
     Todos los pokemones (a excepcion de legendarios) en forma de diccionario. Ej; {... , "Charmander" : [objeto]}
     '''
-    legendary_objects = {}
-    pokemon_objects = {}
+    legendary_objects = []
+    pokemon_objects = []
     moves_data = {}
     # Abre los archivos csv de pokemones y movimientos
     with open('pokemons.csv', newline='') as pokemonfile:
@@ -42,15 +41,15 @@ def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
         # Análisis de si el pokemon es legendario o no
             if int(row['is_legendary']) != 1:
                 # Creación de los objetos de los pokemones
-                pokemon_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+                pokemon_objects.append(pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves))
             else:
-                legendary_objects[row['name']] = pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves)
+                legendary_objects.append(pokemon.Pokemon.from_dict(row['name'], pokemon_info, pokemon_moves))
 
     return pokemon_objects, legendary_objects # Retorna los objetos
 
 #Nota: Se podria evitar el if move != '': si se evita que se procesen pokemones del archivo csv que no tengan movimientos, posible cambio a tener en cuenta. -Gonz
 
-def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
+def create_teams(cuantity: int, pokemons) -> List[utils.team.Team]:
     '''
     Crea todos los equipos.
 
@@ -60,7 +59,6 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
     Returns: 
     teams: Los equipos procesados con las funciones dadas.
     '''
-    all_pokemon_keys = list(objects.keys())
     # Por cada vez dentro de la cantidad pedida...
     teams = []
     for i in range(cuantity):
@@ -68,14 +66,12 @@ def create_teams(cuantity: int, objects) -> List[utils.team.Team]:
         team_pokemon_names = [] #Este codigo no cambio
         # Mientras la cantidad de pokemones en el equipo sea menor a 6...
         while len(team) < 6:
-            pokemon_name = random.choice(all_pokemon_keys)
-            # Guarda al pokemon en una variable
-            pokemon = objects[pokemon_name]
+            pokemon = random.choice(pokemons)
             # Si el nombre del pokemon no esta en la lista de nombres de pokemones del equipo...
-            if pokemon_name not in team_pokemon_names:
+            if pokemon.name not in team_pokemon_names:
                 # Se agrega el pokemon al equipo y el nombre del pokemon a la lista de nombres de pokemones del equipo
                 team.append(pokemon)
-                team_pokemon_names.append(pokemon_name)
+                team_pokemon_names.append(pokemon.name)
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
     
     return teams
@@ -92,43 +88,37 @@ def create_teams_with_legendaries(cuantity: int, not_legendaries, legendaries):
     Returns: 
     teams: Los equipos procesados con las funciones dadas.
     '''
-    all_pokemon_keys = list(not_legendaries.keys()) + list(legendaries.keys())
-    legendary_pokemon_keys = list(legendaries.keys())
+    all_poke = legendaries + not_legendaries
     # Por cada vez dentro de la cantidad pedida...
     teams = []
     for i in range(cuantity):
         count = 0
-        flag = False
         team = []
         team_pokemon_names = [] #Este codigo no cambio
         # Mientras la cantidad de pokemones en el equipo sea menor a 6...
         while len(team) < 6:
             if count == 0:
-                pokemon_name = random.choice(legendary_pokemon_keys)
-                pokemon = legendaries[pokemon_name]
+                pokemon = random.choice(legendaries)
             else:
-                pokemon_name = random.choice(all_pokemon_keys)
-                pokemon = legendaries[pokemon_name] if pokemon_name in legendary_pokemon_keys else not_legendaries[pokemon_name]  
+                pokemon = random.choice(all_poke)
             # Guarda al pokemon en una variable
-            
             # Si el nombre del pokemon no esta en la lista de nombres de pokemones del equipo...
-            if pokemon_name not in team_pokemon_names:
-                if pokemon.is_legendary == 1:
-                    if flag == False:
+            if pokemon.name not in team_pokemon_names:
+                if int(pokemon.is_legendary) == 1:
+                    if 2 > count:
                         team.append(pokemon)
-                        team_pokemon_names.append(pokemon_name)
+                        team_pokemon_names.append(pokemon.name)
                         count += 1
-                        if count > 2:
-                            flag = True
                     else:
                         while pokemon.is_legendary == 1:
-                            pokemon_name = random.choice(not_legendaries.keys())
+                            pokemon = random.choice(not_legendaries)
                         team.append(pokemon)
-                        team_pokemon_names.append(pokemon_name)
+                        team_pokemon_names.append(pokemon.name)
                 else:
                     team.append(pokemon)
-                    team_pokemon_names.append(pokemon_name)
+                    team_pokemon_names.append(pokemon.name)
                 
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
-    
     return teams
+
+
