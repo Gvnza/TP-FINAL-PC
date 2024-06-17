@@ -17,10 +17,6 @@ def main():
     pokemon_objects, legendaries = define_pokemons_objects()
     teams = create_teams(50, pokemon_objects)
     rivals = create_teams_with_legendaries(400, pokemon_objects, legendaries)
-    rival_0 = rivals[0].pokemons
-    for poke in rival_0:
-        print(poke.name)
-        print(poke.is_legendary)
     #Inicializacion de los rivales y los equipos.
     print('-'*70)
     resulsts, average, rivals_results = fights(teams, rivals, 0) 
@@ -38,29 +34,27 @@ def main():
     for i in range(1, 51):
         epoch_begg = time.time()
         resulsts, average, rivals_results = fights(mutated_teams, rivals, i)
-        
+        average_list.append(average)
         #Por ahora, lo mismo que el proceso de la epoca 0.
         previous_averages = (sum(average_list[i-3:i])/3)
-        average_list.append(average)
         #Proceso de mejora de los rivales
-        if previous_averages + 7 >= average >= previous_averages - 7:
-            if random.random() >= 0.45:
-                if 10 >= counter and average >= 335:
-                    rivals = improve_stats(rivals)
+        if counter > 10 or counter == 0:
+            if previous_averages + 7 >= average >= previous_averages - 7:
+                if random.random() >= 0.45:
+                    rivals = improve_rivals(pokemon_objects, rivals_results)
                     mutated_teams = crossing(resulsts, 50, pokemon_objects)
-                    stats_improvement_epochs.append(i)
-                    cprint('ALERTA! Los rivales han aumentado sus pokestats!', 'red')
-                    counter += 1
-                else:
-                    rivals = improve_rivals(pokemon_objects, legendaries, rivals_results)
-                    mutated_teams = crossing(resulsts, 50, pokemon_objects)
-                    cprint('ALERTA! Los rivales han pokemutado!', 'red')
+                    cprint('ALERTA! 50 rivales han pokemutado!', 'red')
                     key_epochs.append(i)
-                #Se mejoran, se muestra un aviso en la terminal y se guarda el dato 
-            else:
+        else: 
+            if 10 >= counter and average >= 350 and i-1 not in stats_improvement_epochs:
+                rivals = improve_stats(rivals)
                 mutated_teams = crossing(resulsts, 50, pokemon_objects)
-        else:
-            mutated_teams = crossing(resulsts, 50, pokemon_objects)
+                stats_improvement_epochs.append(i)
+                cprint('ALERTA! Los rivales han aumentado sus pokestats!', 'red')
+                counter += 1
+                    #Se mejoran, se muestra un aviso en la terminal y se guarda el dato 
+            else:
+                mutated_teams = crossing(resulsts, 50, pokemon_objects)      
 
         epoch_end = time.time()
         minutes = (epoch_end - epoch_begg)//60
@@ -80,3 +74,7 @@ if __name__ == '__main__':
     main()
 
 
+
+
+# * Ahora mismo es normal que el progreso del promedio de victorias de los equipos se estanque, mucho antes de llegar a 350 (App 270 y hubieron 4 mutaciones del los rivales)
+# * Lean el README, ahi puse un par de ideas.

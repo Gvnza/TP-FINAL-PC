@@ -97,7 +97,7 @@ def create_teams_with_legendaries(cuantity: int, not_legendaries, legendaries):
         team_pokemon_names = [] #Este codigo no cambio
         # Mientras la cantidad de pokemones en el equipo sea menor a 6...
         while len(team) < 6:
-            if count == 0:
+            if count == 0 and random.random() <= 0.5:
                 pokemon = random.choice(legendaries)
             else:
                 pokemon = random.choice(all_poke)

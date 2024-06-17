@@ -59,26 +59,28 @@ def crossing(teams, number, objects):
     return mutated_teams
 
 
-def improve_rivals(objects, legendaries, results):
-    # Se toman los primeros 350 rivales
-    first_350_rivals = list(results.keys())[:350]
-    # Se crean 50 nuevos rivales para completar los 400
-    random_50_rivals = gen.create_teams_with_legendaries(50, objects, legendaries) 
-    final_list = []
-
-    for w in range(50):
-        
-        final_list.append(random_50_rivals[w])
-        
-        for q in range(7):
-            final_list.append(first_350_rivals[q * 50 : 50 + q * 50][w])
-    
-    return final_list
+def improve_rivals(objects, results):
+    last_rivals = list(results.keys())[350:400]
+    for team in last_rivals:
+        for pokemon in team.pokemons:
+            if not pokemon.is_legendary == 1:
+                if random.random() <= 0.003:
+                    pokemon_mutation = random.choice(objects)
+                    while pokemon_mutation in team.pokemons:
+                        pokemon_mutation = random.choice(objects)
+                    pokemon = pokemon_mutation
+    return list(list(results.keys())[:350] + last_rivals)
 
 def improve_stats(rivals):
     for team in rivals:
         for pokemon in team.pokemons:
-            pokemon.level += 2
+            pokemon_stats = [pokemon.max_hp, pokemon.attack, pokemon.defense, pokemon.sp_attack, pokemon.sp_defense, pokemon.speed]
+            elected_stat_1 = random.choice(pokemon_stats)
+            elected_stat_1 += 1
+            elected_stat_2 = random.choice(pokemon_stats)
+            elected_stat_2 += 1
+            elected_stat_3 = random.choice(pokemon_stats)
+            elected_stat_3 += 1
     return rivals
 
 def mutate_teams(winner: list, loser: list, i: int):
@@ -94,7 +96,7 @@ def mutate_teams(winner: list, loser: list, i: int):
     final_team_names = []
     
     while len(final_team) < 6 and len(set_list) > 0:
-        selected_team = winner if random.random() < 0.7 else loser
+        selected_team = winner if random.random() <= 0.75 else loser
         chosen_pokemon = selected_team[x]
         if chosen_pokemon.name in set_names and chosen_pokemon.name not in final_team_names:
             set_names.remove(chosen_pokemon.name)
