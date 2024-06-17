@@ -25,6 +25,10 @@ Ideas:
 
     Todos los rivales legendarios
 
+    Suma total de Stats
+
+    Mutaciones legendarias
+
     Traer (de alguna manera, de algun lugar) equipos competitivos o "meta" y fijarse que tan aptos son los equipos finales y que tanto se parecen a estos equipos.
     Esto sería bastante dificil igual
 
