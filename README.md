@@ -4,8 +4,6 @@ Trabajo final pensamiento computacional.
 
 Ideas:
 
-    Que todos los rivales tengan un legendario
-
     Que los pokemones que muten se queden obligatoriamente, es decir, que al elegir dos equipos, 
     si hay algun pokemon que mute, que se asegure que quede en el equipo final de ese cruce.
 
@@ -20,9 +18,7 @@ Ideas:
 
     Hacer un grafico de los tipos de la primer generacion de rivales y de equipos y de la ultima, y comparar como evolucionaron los tipos y porque lo hicieron
     de esa forma.
-
-    Quedarse siempre con las mutaciones
-
+    
     Todos los rivales legendarios
 
     Suma total de Stats
@@ -33,5 +29,3 @@ Ideas:
     Esto sería bastante dificil igual
 
     Tomar las estadisticas de todos los pokemones de la ultima epoca, y hacer un gráfico para ver cuales fueron las stats mas importantes (y por ende, a que se premia mas)
-
-    Evitar que los rivales no mejores dos veces seguidas
