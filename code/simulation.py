@@ -1,6 +1,7 @@
 from selection import crossing, improve_rivals, improve_stats
 from team_gen import create_teams, define_pokemons_objects, create_teams_with_legendaries
 from team_battle import fights
+import matplotlib.pyplot as plt
 import time
 import random
 from termcolor import cprint
@@ -66,7 +67,14 @@ def main():
     end_time = time.time()
     minutes = (end_time - init_time)//60
     print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
-    #Mas datos 
+    #Mas datos
+
+    # Graficos
+    plt.plot(average_list)
+    plt.xlabel('Epoca')
+    plt.ylabel('Promedio de Victorias')
+    plt.title('Promedio de Victorias por Epoca')
+    plt.show()
     
     return key_epochs, end_time, time_per_epoch, average_list
 
