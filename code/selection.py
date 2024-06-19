@@ -75,12 +75,9 @@ def improve_stats(rivals):
     for team in rivals:
         for pokemon in team.pokemons:
             pokemon_stats = [pokemon.max_hp, pokemon.attack, pokemon.defense, pokemon.sp_attack, pokemon.sp_defense, pokemon.speed]
-            elected_stat_1 = random.choice(pokemon_stats)
-            elected_stat_1 += 1
-            elected_stat_2 = random.choice(pokemon_stats)
-            elected_stat_2 += 1
-            elected_stat_3 = random.choice(pokemon_stats)
-            elected_stat_3 += 1
+            for _ in range(3):
+                stat = random.choice(pokemon_stats)
+                stat += 1
     return rivals
 
 def mutate_teams(winner: list, loser: list, i: int):

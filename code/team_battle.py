@@ -50,4 +50,4 @@ def fights(teams, rivals, epoch):
     best_team = list(final_dicc_teams.values())[:1]
     print(f'ÉPOCA: {epoch} \t MEJOR RESULTADO: {best_team[0]} \t PROMEDIO DE VICTORIAS: {sum(list(final_dicc_teams.values()))/50}')
     average_wins = [sum(list(final_dicc_teams.values()))/50]
-    return final_dicc_teams, sum(list(final_dicc_teams.values()))/50, final_dicc_rivals
+    return final_dicc_teams, average_wins, final_dicc_rivals, best_team[0]

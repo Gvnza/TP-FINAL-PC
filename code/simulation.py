@@ -1,16 +1,18 @@
 from selection import crossing, improve_rivals, improve_stats
 from team_gen import create_teams, define_pokemons_objects, create_teams_with_legendaries
 from team_battle import fights
-import matplotlib.pyplot as plt
+from graphs import standard_graphs
 import time
 import random
 from termcolor import cprint
 
 def main():
     average_list = []
+    rivals_results_list = []
     key_epochs = []
+    best_result_list = []
     stats_improvement_epochs = []
-    time_per_epoch = {}
+    time_per_epoch = []
     init_time = time.time()
     counter = 0
     #Recoleccion de datos, medianamente irrelevante.
@@ -20,8 +22,10 @@ def main():
     rivals = create_teams_with_legendaries(400, pokemon_objects, legendaries)
     #Inicializacion de los rivales y los equipos.
     print('-'*70)
-    resulsts, average, rivals_results = fights(teams, rivals, 0) 
+    resulsts, average, rivals_results, best_result = fights(teams, rivals, 0) 
+    best_result_list.append(best_result)
     average_list.append(average)
+    rivals_results_list.append(rivals_results)
     #Los resultados de las batallas
     mutated_teams = crossing(resulsts, 50, pokemon_objects)
     #Mutar
@@ -29,13 +33,15 @@ def main():
     minutes = (tiempo1 - init_time)//60
     print(f'La época 0 tardo {minutes:.0f} minuto(s) y {tiempo1 - init_time - minutes*60:.0f} segundo(s)')
     print('-'*70)
-    time_per_epoch[0] = tiempo1 - init_time
+    time_per_epoch.apend(tiempo1 - init_time)
     #Basicamente, muestra de datos y recoleccion.
 
     for i in range(1, 51):
         epoch_begg = time.time()
-        resulsts, average, rivals_results = fights(mutated_teams, rivals, i)
+        resulsts, average, rivals_results, best_result = fights(teams, rivals, i) 
+        best_result_list.append(best_result)
         average_list.append(average)
+        rivals_results_list.append(rivals_results)
         #Por ahora, lo mismo que el proceso de la epoca 0.
         previous_averages = (sum(average_list[i-3:i])/3)
         #Proceso de mejora de los rivales
@@ -61,28 +67,19 @@ def main():
         minutes = (epoch_end - epoch_begg)//60
         print(f'La época {i} tardo {minutes:.0f} minuto(s) y {epoch_end - epoch_begg - minutes*60:.0f} segundo(s).')
         cprint('-'*70)
-        time_per_epoch[i] = epoch_end - epoch_begg
+        time_per_epoch.apend(tiempo1 - init_time)
+
         #Datos...
 
     end_time = time.time()
     minutes = (end_time - init_time)//60
     print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
-    #Mas datos
 
-    # Graficos
-    plt.plot(average_list)
-    plt.xlabel('Epoca')
-    plt.ylabel('Promedio de Victorias')
-    plt.title('Promedio de Victorias por Epoca')
-    plt.show()
-    
+    standard_graphs(average_list, rivals_results_list, time_per_epoch, best_result_list)
     return key_epochs, end_time, time_per_epoch, average_list
 
 if __name__ == '__main__':
     main()
-
-
-
 
 # * Ahora mismo es normal que el progreso del promedio de victorias de los equipos se estanque, mucho antes de llegar a 350 (App 270 y hubieron 4 mutaciones del los rivales)
 # * Lean el README, ahi puse un par de ideas.
