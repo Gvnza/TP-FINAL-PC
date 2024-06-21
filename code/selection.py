@@ -40,7 +40,7 @@ def crossing(teams, number, objects):
 
         loser_mutated = []
         for j in range(len(loser.pokemons)):
-            if random.random() <= 0.003:
+            if random.random() <= 0.03:
                 #Por cada pokemon del perdedor hay un 3% de probabilidades de que muten
                 pokemon_mutation = random.choice(objects)
                 while pokemon_mutation in loser.pokemons:
@@ -59,26 +59,17 @@ def crossing(teams, number, objects):
     return mutated_teams
 
 
-def improve_rivals(objects, results):
-    last_rivals = list(results.keys())[350:400]
+def improve_rivals(results):
+    last_rivals = results[350:400]
     for team in last_rivals:
         for pokemon in team.pokemons:
             if not pokemon.is_legendary == 1:
-                if random.random() <= 0.003:
-                    pokemon_mutation = random.choice(objects)
-                    while pokemon_mutation in team.pokemons:
-                        pokemon_mutation = random.choice(objects)
-                    pokemon = pokemon_mutation
+                pokemon_stats = [pokemon.max_hp, pokemon.attack, pokemon.defense, pokemon.sp_attack, pokemon.sp_defense, pokemon.speed]
+                for _ in range(3):
+                    stat = random.choice(pokemon_stats)
+                    stat += 1
     return list(list(results.keys())[:350] + last_rivals)
 
-def improve_stats(rivals):
-    for team in rivals:
-        for pokemon in team.pokemons:
-            pokemon_stats = [pokemon.max_hp, pokemon.attack, pokemon.defense, pokemon.sp_attack, pokemon.sp_defense, pokemon.speed]
-            for _ in range(3):
-                stat = random.choice(pokemon_stats)
-                stat += 1
-    return rivals
 
 def mutate_teams(winner: list, loser: list, i: int):
     team_set = set(winner + loser)

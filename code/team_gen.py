@@ -1,7 +1,6 @@
 import csv, random
 from typing import List, Dict
 import utils.pokemon as pokemon
-import utils.move as move
 import utils.team
 
 def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
