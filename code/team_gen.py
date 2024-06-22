@@ -119,5 +119,3 @@ def create_teams_with_legendaries(cuantity: int, not_legendaries, legendaries):
                 
         teams.append(utils.team.Team(str(f'Equipo {i}'), team, 0))
     return teams
-
-

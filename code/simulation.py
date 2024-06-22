@@ -1,7 +1,8 @@
 from selection import crossing, improve_rivals
 from team_gen import create_teams, define_pokemons_objects, create_teams_with_legendaries
 from team_battle import fights
-from graphs import standard_graphs
+import situationalGraphs
+import standardGraphs as sg
 import time
 import random
 from termcolor import cprint
@@ -36,15 +37,15 @@ def main():
     print('-'*70)
     time_per_epoch.append(tiempo1 - init_time)
     #Basicamente, muestra de datos y recoleccion.
-    for i in range(1, 51):
+    for i in range(1, 15):
         epoch_begg = time.time()
-        resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i)
+        resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i) # Estas ahí?
         best_result_list.append(best_result)
         average_list.append(average)
         rivals_results_list.append(list(rivals_results.values())[0])
         #Por ahora, lo mismo que el proceso de la epoca 0.
         #Proceso de mejora de los rivales
-        if 10 >= counter and average >= 350 and i-1 not in stats_improvement_epochs:
+        if 15 >= counter and average >= 350 and i-1 not in stats_improvement_epochs:
             rivals = improve_rivals(rivals_results)
             mutated_teams = crossing(resulsts, 50, pokemon_objects)
             stats_improvement_epochs.append(i)
@@ -52,26 +53,37 @@ def main():
             counter += 1
                 #Se mejoran, se muestra un aviso en la terminal y se guarda el dato 
         else:
-            mutated_teams = crossing(resulsts, 50, pokemon_objects)      
+            mutated_teams = crossing(resulsts, 50, pokemon_objects)
 
         epoch_end = time.time()
         minutes = (epoch_end - epoch_begg)//60
         print(f'La época {i} tardo {minutes:.0f} minuto(s) y {epoch_end - epoch_begg - minutes*60:.0f} segundo(s).')
         cprint('-'*70)
         time_per_epoch.append(tiempo1 - init_time)
-
         #Datos...
 
     end_time = time.time()
     minutes = (end_time - init_time)//60
     print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
 
-    standard_graphs(average_list, rivals_results_list, time_per_epoch, best_result_list)
+    # Presenta las opciones
+    print('----------------------------------------------------------------------')
+    print('OPCIONES:')
+    option = 0
+    option_list = [1, 2, 3]
+    while int(option) not in option_list:
+        option = input('[1] Gráficos\n[2] Pelea final\n[3] Salir')
+    if isinstance(option, int):
+        if option == 1:
+            graphics = input('[1]')
+            if graphics == 1:
+                sg.pokemon_type_distribution1(mutated_teams)
+        elif option == 2:
+            return key_epochs, end_time, time_per_epoch, average_list
+        else:
+            return key_epochs, end_time, time_per_epoch, average_list
 
     return key_epochs, end_time, time_per_epoch, average_list
 
 if __name__ == '__main__':
     main()
-
-# * Ahora mismo es normal que el progreso del promedio de victorias de los equipos se estanque, mucho antes de llegar a 350 (App 270 y hubieron 4 mutaciones del los rivales)
-# * Lean el README, ahi puse un par de ideas.
