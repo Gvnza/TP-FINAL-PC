@@ -75,9 +75,7 @@ def main():
         option = input('[1] Gráficos\n[2] Pelea final\n[3] Salir')
     if isinstance(option, int):
         if option == 1:
-            graphics = input('[1]')
-            if graphics == 0:
-                sg.pokemon_type_distribution1(mutated_teams)
+            graphics = input('[0] Regresar\n[1] Diversidad de Pokémon en los Equipos por Época\n[2] Evolución de la Aptitud a lo largo de las Épocas\n[3] Distribución de Pokémon en los Equipos en la última Época\n[4] Distribución de Tipos de Pokémon en los Equipos en la última Época\n[5] Distribución de Tipos de Pokémon en los Equipos por Época\n[6] Estadísticas del mejor equipo encontrado\n[7] Mejor equipo encontrado\n[8] Promedio de Victorias de equipos y rivales por Época\n[9] Tiempo por Época\n[10] Victorias por Época del mejor equipo\n[11] Gráfico de Gauss\n')
 
             if graphics == 1:
                 pokemon_lists = [team['pokemon_list'] for team in mutated_teams]
@@ -136,6 +134,9 @@ def main():
                 for epoch in mutated_teams:
                     best_teams.append(epoch[0]['best_pokemon']['identifiers'])
                 sg.best_teams_wins(best_teams)
+
+            if graphics == 11:
+                sg.gauss()
 
         elif option == 2:
             return key_epochs, end_time, time_per_epoch, average_list
