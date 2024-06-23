@@ -78,20 +78,25 @@ def main():
             graphics = input('[1]')
             if graphics == 0:
                 sg.pokemon_type_distribution1(mutated_teams)
+
             if graphics == 1:
                 pokemon_lists = [team['pokemon_list'] for team in mutated_teams]
                 sg.pokemon_diversity(pokemon_lists)
+
             if graphics == 2:
                 fitness_per_epoch = []
                 for epoch in mutated_teams:
                     fitness_per_epoch.append(epoch['best_fitness'])
                 sg.fitness_evolution(fitness_per_epoch)
+
             if graphics == 3:
                 last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
                 sg.pokemon_distribution(last_epoch_teams)
+
             if graphics == 4:
                 last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
                 sg.pokemon_type_distribution1(last_epoch_teams)
+
             if graphics == 5:
                 pokemon_types = []
                 for epoch in mutated_teams:
@@ -101,6 +106,37 @@ def main():
                             types.extend(pokemon['types'])
                     pokemon_types.append(types)
                 sg.pokemon_type_distribution(pokemon_types)
+
+            if graphics == 6:
+                stats = mutated_teams[-1][0]['best_pokemon']['stats']
+                sg.radar_chart(stats)
+
+            if graphics == 7:
+                best_teams = mutated_teams[-1][0]['best_pokemon']['identifiers']
+                sg.show_best_team(best_teams)
+
+            if graphics == 8:
+                average_list = []
+                result_list = []
+
+                for epoch in mutated_teams:
+                    average_list.append(epoch['average_wins'])
+                    result_list.append(epoch['average_opponent_wins'])
+
+                sg.average_wins(average_list, result_list)
+
+            if graphics == 9:
+                time_per_epoch = []
+                for epoch in mutated_teams:
+                    time_per_epoch.append(epoch['time'])
+                sg.time_per_epoch(time_per_epoch)
+            
+            if graphics == 10:
+                best_teams = []
+                for epoch in mutated_teams:
+                    best_teams.append(epoch[0]['best_pokemon']['identifiers'])
+                sg.best_teams_wins(best_teams)
+
         elif option == 2:
             return key_epochs, end_time, time_per_epoch, average_list
         else:
