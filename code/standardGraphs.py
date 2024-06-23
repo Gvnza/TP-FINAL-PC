@@ -69,8 +69,7 @@ def pokemon_type_distribution1(last_epoch_teams):
     plt.xticks(rotation=45)
     plt.show()
 
-# Distribución de Tipos de Pokémon en los Equipos por Época: Un gráfico de lineas o un “stacked area plot” que muestre la distribución de los tipos de Pokémon en los 
-# equipos de cada época. Esto podría proporcionar información sobre la diversidad de tipos de Pokémon en los equipos a lo largo del tiempo.
+# Distribución de Tipos de Pokémon en los Equipos por Época: Un gráfico de lineas o un “stacked area plot” que muestre la distribución de los tipos de Pokémon en los equipos de cada época. Esto podría proporcionar información sobre la diversidad de tipos de Pokémon en los equipos a lo largo del tiempo.
 
 def pokemon_type_distribution(pokemon_types):
     epochs = len(pokemon_types)
