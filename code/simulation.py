@@ -11,6 +11,7 @@ def main():
     average_list = []
     rivals_results_list = []
     key_epochs = []
+    all_teams = []
     best_result_list = []
     stats_improvement_epochs = []
     time_per_epoch = []
@@ -20,6 +21,7 @@ def main():
 
     pokemon_objects, legendaries = define_pokemons_objects()
     teams = create_teams(50, pokemon_objects)
+    all_teams.append(teams)
     rivals = create_teams_with_legendaries(400, pokemon_objects, legendaries)
     #Inicializacion de los rivales y los equipos.
     print('-'*70)
@@ -37,23 +39,26 @@ def main():
     print('-'*70)
     time_per_epoch.append(tiempo1 - init_time)
     #Basicamente, muestra de datos y recoleccion.
-    for i in range(1, 15):
+    for i in range(1, 6):
         epoch_begg = time.time()
         resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i) # Estas ahí?
         best_result_list.append(best_result)
         average_list.append(average)
         rivals_results_list.append(list(rivals_results.values())[0])
-        #Por ahora, lo mismo que el proceso de la epoca 0.
-        #Proceso de mejora de los rivales
+
         if 15 >= counter and average >= 350 and i-1 not in stats_improvement_epochs:
             rivals = improve_rivals(rivals_results)
+
             mutated_teams = crossing(resulsts, 50, pokemon_objects)
+            all_teams.append(mutated_teams)
+            
             stats_improvement_epochs.append(i)
             cprint('ALERTA! Los rivales han aumentado sus pokestats!', 'red')
             counter += 1
-                #Se mejoran, se muestra un aviso en la terminal y se guarda el dato 
+
         else:
             mutated_teams = crossing(resulsts, 50, pokemon_objects)
+            all_teams.append(mutated_teams)
 
         epoch_end = time.time()
         minutes = (epoch_end - epoch_begg)//60
@@ -72,30 +77,28 @@ def main():
     option = 0
     option_list = [1, 2, 3]
     while int(option) not in option_list:
-        option = input('[1] Gráficos\n[2] Pelea final\n[3] Salir')
-    if isinstance(option, int):
+        option = int(input('[1] Gráficos\n[2] Pelea final\n[3] Salir'))
         if option == 1:
-            graphics = input('[0] Regresar\n[1] Diversidad de Pokémon en los Equipos por Época\n[2] Evolución de la Aptitud a lo largo de las Épocas\n[3] Distribución de Pokémon en los Equipos en la última Época\n[4] Distribución de Tipos de Pokémon en los Equipos en la última Época\n[5] Distribución de Tipos de Pokémon en los Equipos por Época\n[6] Estadísticas del mejor equipo encontrado\n[7] Mejor equipo encontrado\n[8] Promedio de Victorias de equipos y rivales por Época\n[9] Tiempo por Época\n[10] Victorias por Época del mejor equipo\n[11] Gráfico de Gauss\n')
+            graphics = int(input('[0] Regresar\n[1] Diversidad de Pokémon en los Equipos por Época\n[2] Evolución de la Aptitud a lo largo de las Épocas\n[3] Distribución de Pokémon en los Equipos en la última Época\n[4] Distribución de Tipos de Pokémon en los Equipos en la última Época\n[5] Distribución de Tipos de Pokémon en los Equipos por Época\n[6] Estadísticas del mejor equipo encontrado\n[7] Mejor equipo encontrado\n[8] Promedio de Victorias de equipos y rivales por Época\n[9] Tiempo por Época\n[10] Victorias por Época del mejor equipo\n[11] Gráfico de Gauss\n'))
 
             if graphics == 1:
-                pokemon_lists = [team['pokemon_list'] for team in mutated_teams]
-                sg.pokemon_diversity(pokemon_lists)
+                sg.pokemon_diversity(all_teams)
 
-            if graphics == 2:
+            elif graphics == 2:
                 fitness_per_epoch = []
-                for epoch in mutated_teams:
-                    fitness_per_epoch.append(epoch['best_fitness'])
+                for epoch in all_teams:
+                    fitness_per_epoch.append(epoch[0])
                 sg.fitness_evolution(fitness_per_epoch)
 
-            if graphics == 3:
+            elif graphics == 3:
                 last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
                 sg.pokemon_distribution(last_epoch_teams)
 
-            if graphics == 4:
+            elif graphics == 4:
                 last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
                 sg.pokemon_type_distribution1(last_epoch_teams)
 
-            if graphics == 5:
+            elif graphics == 5:
                 pokemon_types = []
                 for epoch in mutated_teams:
                     types = []
@@ -105,7 +108,7 @@ def main():
                     pokemon_types.append(types)
                 sg.pokemon_type_distribution(pokemon_types)
 
-            if graphics == 6:
+            elif graphics == 6:
                 stats = mutated_teams[-1][0]['best_pokemon']['stats']
                 sg.radar_chart(stats)
 
@@ -113,7 +116,7 @@ def main():
                 best_teams = mutated_teams[-1][0]['best_pokemon']['identifiers']
                 sg.show_best_team(best_teams)
 
-            if graphics == 8:
+            elif graphics == 8:
                 average_list = []
                 result_list = []
 
@@ -123,19 +126,19 @@ def main():
 
                 sg.average_wins(average_list, result_list)
 
-            if graphics == 9:
+            elif graphics == 9:
                 time_per_epoch = []
                 for epoch in mutated_teams:
                     time_per_epoch.append(epoch['time'])
                 sg.time_per_epoch(time_per_epoch)
             
-            if graphics == 10:
+            elif graphics == 10:
                 best_teams = []
                 for epoch in mutated_teams:
                     best_teams.append(epoch[0]['best_pokemon']['identifiers'])
                 sg.best_teams_wins(best_teams)
 
-            if graphics == 11:
+            elif graphics == 11:
                 sg.gauss()
 
         elif option == 2:

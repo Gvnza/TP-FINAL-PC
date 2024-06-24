@@ -1,16 +1,20 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 # Diversidad de Pokémon en los Equipos por Época: Un gráfico que muestre la cantidad de Pokémon distintos que aparecen en los equipos de cada época. Esto podría proporcionar información sobre la diversidad de Pokémon en los equipos a lo largo del tiempo.
 def pokemon_diversity(teams):
     diversity = []
     for epoch in range(len(teams)):
-        unique_pokemon = set()
+        unique_pokemon = []
         for team in teams[epoch]:
-            unique_pokemon.update(team)
+            for pokemon in team.pokemons:
+                if pokemon in unique_pokemon:
+                    continue
+                else:
+                    unique_pokemon.append(pokemon)
         diversity.append(len(unique_pokemon))
     
-    plt.plot(diversity, 'blue')
+    plt.plot(diversity, 'k')
     plt.xlabel('Época')
     plt.ylabel('Número de Pokémons únicos')
     plt.title('Diversidad Pokémon En los equipos por épocas')
@@ -146,8 +150,6 @@ def show_best_team(best_teams):
 
     # Muestra el gráfico completo
     plt.show()
-
-
 
 def average_wins(average_list, result_list):
     plt.plot(average_list, 'forestgreen', label='Equipos')

@@ -2,13 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import bernoulli
 
-
-
-
-
- # xd
-
-
 def gauss():
     teams = 50
     pokes_per_team = 6
