@@ -39,7 +39,7 @@ def main():
     print('-'*70)
     time_per_epoch.append(tiempo1 - init_time)
     #Basicamente, muestra de datos y recoleccion.
-    for i in range(1, 6):
+    for i in range(1, 3):
         epoch_begg = time.time()
         resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i) # Estas ahí?
         best_result_list.append(best_result)

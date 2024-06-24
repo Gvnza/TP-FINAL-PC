@@ -60,7 +60,7 @@ def crossing(teams, number, objects):
 
 
 def improve_rivals(results):
-    last_rivals = list(results.keys())[len():400]
+    last_rivals = list(results.keys())[350:400]
     for team in last_rivals:
         for pokemon in team.pokemons:
             if not pokemon.is_legendary == 1:
