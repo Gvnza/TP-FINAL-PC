@@ -15,10 +15,9 @@ def pokemon_diversity(teams):
     plt.xlabel('Época')
     plt.ylabel('Número de Pokémons únicos')
     plt.title('Diversidad Pokémon En los equipos por épocas')
+    plt.savefig('pokemon_diversity.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('pokemon_diversity.png')
+        
 
 # Evolución de la Aptitud a lo largo de las Épocas: Un gráfico que muestre cómo cambia la aptitud del mejor equipo encontrado en cada época. Esto puede ayudar a visualizar cómo el algoritmo genético mejora la calidad de los equipos con el tiempo.
 def fitness_evolution(fitness_list):
@@ -26,10 +25,9 @@ def fitness_evolution(fitness_list):
     plt.xlabel('Época')
     plt.ylabel('Aptitud')
     plt.title('Evolución de aptitud por época')
+    plt.savefig('fitness_evolution.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('fitness_evolution.png')
+        
 
 # Distribución de Pokémon en los Equipos en la última Época: Un gráfico de barras o un “pie chart” que muestre la distribución de los Pokémon en los equipos de la última época. Esto podría proporcionar información sobre la diversidad de Pokémon en los equipos finales.
 def pokemon_distribution(last_epoch_teams):
@@ -37,10 +35,10 @@ def pokemon_distribution(last_epoch_teams):
     pokemon_counts = {}
     for team in last_epoch_teams:
         for pokemon in team.pokemons:
-            if pokemon not in pokemon_counts:
-                pokemon_counts[pokemon] = 1
+            if pokemon.name not in pokemon_counts.keys():
+                pokemon_counts[pokemon.name] = 1
             else:
-                pokemon_counts[pokemon] += 1
+                pokemon_counts[pokemon.name] += 1
         
     # Crea un grafico de barras o un "pie chart" para mostrar la distribución
     pokemon_names = list(pokemon_counts.keys())
@@ -51,14 +49,8 @@ def pokemon_distribution(last_epoch_teams):
     plt.xlabel('Pokémon')
     plt.ylabel('Apariciones')
     plt.title('Distribución de Pokémons en los equipos (última época)')
-    plt.show()
     plt.savefig('pokemon_distribution_I.png')
-        
-    # Pie chart
-    plt.pie(pokemon_occurrences, labels=pokemon_names, autopct='%1.1f%%')
-    plt.title('Distribución de Pokémons en los equipos (última época)')
     plt.show()
-    plt.savefig('pokemon_distribution_II.png')
 
 # Distribución de Tipos de Pokémon en los Equipos en la última Época: Un gráfico de barras o un “pie chart” que muestre la distribución de los tipos de Pokémon en los equipos de la última época. Esto podría proporcionar información sobre la diversidad de tipos de Pokémon en los equipos finales.
 def second_pokemon_type_distribution(last_epoch_teams):
@@ -67,47 +59,49 @@ def second_pokemon_type_distribution(last_epoch_teams):
 
     for team in last_epoch_teams:
         for pokemon in team.pokemons:
-            pokemon_type = pokemon['type']
-            type_index = types.index(pokemon_type)
+            type_index = types.index(pokemon.type1)
             type_counts[type_index] += 1
+            if pokemon.type2 is not None:
+                type_index = types.index(pokemon.type2)
+                type_counts[type_index] += 1
+            else:
+                type_counts[type_index] += 1
 
-    plt.bar(types, type_counts, color=['red', 'blue', 'green', 'yellow', 'gray', 'brown', 'purple', 'pink', 'lightblue', 'orange', 'lime', 'black', 'maroon', 'darkviolet', 'indigo', 'lightpink', 'silver'])
+    plt.bar(types, type_counts, color=['grey', 'red', 'blue', 'yellow', 'green', 'lightblue', 'firebrick', 'purple', 'sandybrown', 'skyblue', 'deeppink', 'olivedrab', 'peru', 'indigo', 'midnightblue', 'black', 'slategrey', 'magenta'])
     plt.xlabel('Tipo de Pokémon')
     plt.ylabel('Cantidad')
     plt.title('Distribución de tipos de Pokémons en los equipos (última época)')
     plt.xticks(rotation=45)
+    plt.savefig('second_pokemon_type_distribution.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('second_pokemon_type_distribution.png')
 
 # Distribución de Tipos de Pokémon en los Equipos por Época: Un gráfico de lineas o un “stacked area plot” que muestre la distribución de los tipos de Pokémon en los equipos de cada época. Esto podría proporcionar información sobre la diversidad de tipos de Pokémon en los equipos a lo largo del tiempo.
 
-def pokemon_type_distribution(pokemon_types):
-    epochs = len(pokemon_types)
-    teams = len(pokemon_types[0])
-    types = len(pokemon_types[0][0])
+def pokemon_type_distribution(teams):
+    types = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
+    type_counts = [0] * len(types)
+    for epoch in teams:
+        for team in epoch:
+            
+            for pokemon in team.pokemons:
+                type_index = types.index(pokemon.type1)
+                type_counts[type_index] += 1
+                if pokemon.type2 is not None:
+                    type_index = types.index(pokemon.type2)
+                    type_counts[type_index] += 1
+                else:
+                    type_counts[type_index] += 1
 
-    # Crea un gráfico de áreas apiladas para cada época
-    for epoch in range(epochs):
-        # Initialize the data for the stacked area plot
-        stacked_data = np.zeros((teams, types))
-
-        # Calcula la distribución de tipos de Pokémon en cada equipo
-        for team in range(teams):
-            for poke_type in range(types):
-                stacked_data[team, poke_type] = sum(pokemon_types[epoch][team][poke_type])
 
         # Traza el gráfico de áreas apiladas
-        plt.stackplot(range(teams), stacked_data.T, labels=['Type 1', 'Type 2', 'Type 3', 'Type 4', 'Type 5'])
+        plt.stackplot(type_counts, ['grey', 'red', 'blue', 'yellow', 'green', 'lightblue', 'firebrick', 'purple', 'sandybrown', 'skyblue', 'deeppink', 'olivedrab', 'peru', 'indigo', 'midnightblue', 'black', 'slategrey', 'magenta'])
         plt.xlabel('Equipo')
         plt.ylabel('Cantidad de Pokemones')
         plt.title(f'Distribucion de los tipos en los Equipos según la época {epoch+1}')
         plt.legend()
+        plt.savefig('pokemon_type_distribution.png')
         plt.show()
-        save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-        if save_question == '1':
-            plt.savefig('pokemon_type_distribution.png')
+        
 
 # Estadísticas del mejor equipo encontrado: Un gráfico que muestre las estadísticas de los Pokémon en el mejor equipo encontrado por el algoritmo genético. Esto podría ayudar a visualizar las fortalezas y debilidades del equipo final. Se podría usar un gráfico de barras o un “radar chart” para este propósito.
 
@@ -127,11 +121,8 @@ def radar_chart(stats):
     
     ax.yaxis.grid(True)
     ax.set_title('Estadísticas del mejor equipo')
-    
+    plt.savefig('radar_chart.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('radar_chart.png')
 
 # Mejor equipo encontrado: Puede mostrar las imágenes de los Pokémon que componen el mejor equipo encontrado. Mostrando sus nombres y tipos.
 def show_best_team(best_teams):
@@ -162,11 +153,9 @@ def show_best_team(best_teams):
         # Establece el título del subplot con el nombre y tipo
         axes[i // 3, i % 3].set_title(f'{name}\n{type}')
 
-    # Muestra el gráfico completo
+    plt.savefig('show_best_team.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('show_best_team.png')
+        
 
 def average_wins(average_list, result_list):
     plt.plot(average_list, 'forestgreen', label='Equipos')
@@ -175,27 +164,24 @@ def average_wins(average_list, result_list):
     plt.ylabel('Promedio de Victorias')
     plt.title('Promedio de Victorias por Epoca')
     plt.legend()
+    plt.savefig('average_wins.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('average_wins.png')
+        
 
 def time_per_epoch(time_per_epoch):
     plt.plot(time_per_epoch, 'indigo')
     plt.xlabel('Época')
     plt.ylabel('Tiempo (s)')
     plt.title('Tiempo por época')
+    plt.savefig('time_per_epoch.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('time_per_epoch.png')
+        
 
 def best_teams_wins(best_teams):
     plt.plot(best_teams, 'gold')
     plt.xlabel('Época')
     plt.ylabel('Batallas ganadas')
     plt.title('Mejor equipo por época')
+    plt.savefig('best_teams_wins.png')
     plt.show()
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('best_teams_wins.png')
+        

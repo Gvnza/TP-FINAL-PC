@@ -41,7 +41,7 @@ def main():
     #Basicamente, muestra de datos y recoleccion.
     for i in range(1, 3):
         epoch_begg = time.time()
-        resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i) # Estas ahí?
+        resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i)
         best_result_list.append(best_result)
         average_list.append(average)
         rivals_results_list.append(list(rivals_results.values())[0])
@@ -80,66 +80,32 @@ def main():
         option = int(input('[1] Gráficos\n[2] Pelea final\n[3] Salir'))
         if option == 1:
             graphics = -1
-            print('----------------------------------------------------------------------')
             while graphics != 0:
                 graphics = int(input('[0] Regresar\n[1] Diversidad de Pokémon en los Equipos por Época\n[2] Evolución de la Aptitud a lo largo de las Épocas\n[3] Distribución de Pokémon en los Equipos en la última Época\n[4] Distribución de Tipos de Pokémon en los Equipos en la última Época\n[5] Distribución de Tipos de Pokémon en los Equipos por Época\n[6] Estadísticas del mejor equipo encontrado\n[7] Mejor equipo encontrado\n[8] Promedio de Victorias de equipos y rivales por Época\n[9] Tiempo por Época\n[10] Victorias por Época del mejor equipo\n[11] Gráfico de Gauss\n'))
-                
-                if graphics == 0:
-                    option = 0
-                    break
 
                 if graphics == 1:
-                    print('----------------------------------------------------------------------')
-                    print("Diversidad de Pokémon en los Equipos por Época: Gráfico que muestra la cantidad de Pokémon distintos que aparecen en los equipos de cada época.")
                     sg.pokemon_diversity(all_teams)
 
                 elif graphics == 2:
-                    print('----------------------------------------------------------------------')
-                    print("Evolución de la Aptitud a lo largo de las Épocas: Gráfico que muestra la evolución de la aptitud del mejor equipo encontrado, en cada época")
-                    fitness_per_epoch = []
-                    for epoch in all_teams:
-                        fitness_per_epoch.append(epoch[0])
-                    sg.fitness_evolution(fitness_per_epoch)
+                    sg.fitness_evolution(best_result_list)
 
                 elif graphics == 3:
-                    print('----------------------------------------------------------------------')
-                    print("Distribución de Pokémon en los Equipos en la última Época: Gráfico de barras y “pie chart” que muestra la distribución de los Pokémon en los equipos de la última época.")
-                    last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
-                    sg.pokemon_distribution(last_epoch_teams)
+                    sg.pokemon_distribution(mutated_teams)
 
                 elif graphics == 4:
-                    print('----------------------------------------------------------------------')
-                    print("Distribución de Tipos de Pokémon en los Equipos en la última Época: Gráfico de barras y “pie chart” que muestra la distribución de los tipos de Pokémon en los equipos de la última época.")
-                    last_epoch_teams = [team['pokemon_list'] for team in mutated_teams[-1]]
-                    sg.second_pokemon_type_distribution(last_epoch_teams)
+                    sg.second_pokemon_type_distribution(mutated_teams)
 
                 elif graphics == 5:
-                    print('----------------------------------------------------------------------')
-                    print("Distribución de Tipos de Pokémon en los Equipos por Época: Gráfico de lineas y “stacked area plot” que muestra la distribución de los tipos de Pokémon en los equipos de cada época.")
-                    pokemon_types = []
-                    for epoch in mutated_teams:
-                        types = []
-                        for team in epoch:
-                            for pokemon in team['pokemon_list']:
-                                types.extend(pokemon['types'])
-                        pokemon_types.append(types)
-                    sg.pokemon_type_distribution(pokemon_types)
+                    sg.pokemon_type_distribution(all_teams)
 
                 elif graphics == 6:
-                    print('----------------------------------------------------------------------')
-                    print("Estadísticas del mejor equipo encontrado: Gráfico que muestra las estadísticas de los Pokémon en el mejor equipo encontrado por el algoritmo genético.")
-                    stats = mutated_teams[-1][0]['best_pokemon']['stats']
-                    sg.radar_chart(stats)
+                    sg.radar_chart(best_result)
 
                 if graphics == 7:
-                    print('----------------------------------------------------------------------')
-                    print("Mejor equipo encontrado: Muestra las imágenes de los Pokémon que componen el mejor equipo encontrado. Mostrando sus nombres y tipos.")
                     best_teams = mutated_teams[-1][0]['best_pokemon']['identifiers']
                     sg.show_best_team(best_teams)
 
                 elif graphics == 8:
-                    print('----------------------------------------------------------------------')
-                    print("Equipos y rivales por épocas: Gráfico de líneas comparando el promedio de victorias de los equipos y los rivales a lo largo de las épocas.")
                     average_list = []
                     result_list = []
 
@@ -150,24 +116,18 @@ def main():
                     sg.average_wins(average_list, result_list)
 
                 elif graphics == 9:
-                    print('----------------------------------------------------------------------')
-                    print("Tiempo por época: Gráfico de líneas mostrando el tiempo transcurrido por cada época.")
                     time_per_epoch = []
                     for epoch in mutated_teams:
                         time_per_epoch.append(epoch['time'])
                     sg.time_per_epoch(time_per_epoch)
                 
                 elif graphics == 10:
-                    print('----------------------------------------------------------------------')
-                    print("Victorias del mejor equipo: Gráfico de líneas mostrando el número de batallas ganadas por el mejor equipo en cada época.")
                     best_teams = []
                     for epoch in mutated_teams:
                         best_teams.append(epoch[0]['best_pokemon']['identifiers'])
                     sg.best_teams_wins(best_teams)
 
                 elif graphics == 11:
-                    print('----------------------------------------------------------------------')
-                    print("Mutaciones a través del tiempo: Grafico de la distribución de las mutaciones en equipos Pokémon a lo largo de 1000 épocas, ajustando una curva gaussiana (distribución normal) sobre el histograma de las mutaciones.")
                     sg.gauss()
 
         elif option == 2:
