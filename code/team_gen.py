@@ -34,8 +34,8 @@ def define_pokemons_objects() -> Dict[str, pokemon.Pokemon]:
                     'is_legendary': row['is_legendary'], 'moves' : row['moves'].split(';')}
             
             for move in pokemon_info['moves']:
-                    if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
-                        pokemon_moves[move] = moves_data[move]
+                if move != '': #Evito que de error si no tiene movimientos (como es el caso de algunos pokemon). Ver nota despues de la funcion
+                    pokemon_moves[move] = moves_data[move]
 
         # Análisis de si el pokemon es legendario o no
             if int(row['is_legendary']) != 1:
