@@ -59,7 +59,6 @@ def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float
             action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
     
         first.do_action(action_1, target_1, second, effectiveness)
-        
         # If any of the pokemons fainted, the turn ends, and both have the chance to switch
         if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
             __faint_change__(team1, team2, effectiveness)

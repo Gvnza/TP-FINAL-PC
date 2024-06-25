@@ -114,8 +114,13 @@ pokemon_images = load_img(pokemon_numbers)
 background = pygame.image.load('Campo_de_batalla_DPPt_2.png')
 background = pygame.transform.scale(background, (width, height))
 
-def random_movements(Pokemon):
-    return random.choice(Pokemon.moves)
+def random_movements(poke):
+    pokemon_moves = []
+    for dicc in list(poke.moves.values()):
+        for move in list(dicc.values()):
+            if move is not None:
+                pokemon_moves.append(move)
+    return random.choice(pokemon_moves)
 
 def round_simulation (team1, team2, efectiveness):
     pokemon1 = team1.pokemons[0]
@@ -127,18 +132,18 @@ def round_simulation (team1, team2, efectiveness):
     damage1 = movement1.get_damage(pokemon1, pokemon2, efectiveness)
     damage2 = movement2.get_damage(pokemon2, pokemon1, efectiveness)
 
-    pokemon2.hp -= damage1
+    pokemon2.current_hp -= damage1
     print(f'{pokemon1.name} usó {movement1.name}!')
-    if pokemon2.hp <= 0:
+    if pokemon2.current_hp <= 0:
         print(f'{pokemon2.name} se debilitó...')
         team2.pokemons.pop(0)
         if len(team2.pokemons) == 0:
             print(f'¡Has derrotado a {team2.name}!')
 
     if team2.pokemons:
-        pokemon1.hp -= damage2
+        pokemon1.current_hp -= damage2
         print(f'{pokemon2.name} usó {movement2.name}!')
-        if pokemon1.hp <= 0:
+        if pokemon1.current_hp <= 0:
             print(f'{pokemon1.name} se debilitó...')
             team1.pokemons.pop(0)
             if len(team1.pokemons) == 0:
