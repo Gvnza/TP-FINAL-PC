@@ -137,7 +137,7 @@ pokemon_numbers = load_pokedex()
 pokemon_images = load_img(pokemon_numbers)
 
 # Cargar y escalar la imagen de fondo
-background = pygame.image.load('Fondo.jpg')
+background = pygame.image.load('Campo_de_batalla_DPPt_2.png')
 background = pygame.transform.scale(background, (width, height))
 
 def random_movements(poke: 'pokemon') -> 'Move':
