@@ -3,6 +3,7 @@ import pygame
 import random
 from utils.team import Team
 import utils.pokemon as pokemon
+from utils.combat import get_winner
 from utils.move import Move
 from typing import Dict, List, Tuple
 
@@ -85,6 +86,7 @@ width, height = 1024, 768
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption('PELEA POKEMON')
 
+
 # Definición de colores
 white = (255, 255, 255)
 grey = (72, 72, 72)
@@ -138,6 +140,52 @@ pokemon_images = load_img(pokemon_numbers)
 background = pygame.image.load('Fondo.jpg')
 background = pygame.transform.scale(background, (width, height))
 
+def random_movements(poke: 'pokemon') -> 'Move':
+    """
+    Selecciona un movimiento aleatorio de un Pokémon.
+
+    Args:
+        poke (Pokemon): Un objeto de la clase Pokémon.
+
+    Returns:
+        Move: Un objeto de la clase Movimiento seleccionado aleatoriamente.
+    """
+    pokemon_moves = []
+    for dicc in list(poke.moves.values()):
+        for move in list(dicc.values()):
+            if move is not None:
+                pokemon_moves.append(move)
+    return random.choice(pokemon_moves)
+
+def round_simulation (team1, team2, efectiveness):
+    pokemon1 = team1.pokemons[0]
+    pokemon2 = team2.pokemons[0]
+
+    movement1 = random_movements(pokemon1)
+    movement2 = random_movements(pokemon2)
+
+    damage1 = movement1.get_damage(pokemon1, pokemon2, efectiveness)
+    damage2 = movement2.get_damage(pokemon2, pokemon1, efectiveness)
+
+    pokemon2.current_hp -= damage1
+    print(f'{pokemon1.name} usó {movement1.name}!')
+
+    if pokemon2.current_hp <= 0:
+        print(f'{pokemon2.name} se debilitó...')
+        team2.pokemons.pop(0)
+        if len(team2.pokemons) == 0:
+            print(f'¡Has derrotado a {team2.name}!')
+
+    if team2.pokemons:
+        pokemon1.current_hp -= damage2
+        print(f'{pokemon2.name} usó {movement2.name}!')
+        if pokemon1.current_hp <= 0:
+            print(f'{pokemon1.name} se debilitó...')
+            team1.pokemons.pop(0)
+            if len(team1.pokemons) == 0:
+                print(f'{team1.name} se quedó sin Pokémon utilizables.')
+    
+
 def health_bar(pokemon: 'pokemon', x: int, y: int) -> None:
     """
     Dibuja una barra de salud para un Pokémon.
@@ -183,11 +231,11 @@ def events_visualization(text: str) -> None:
     Args:
         text (str): El texto del evento que se mostrará.
     """
-    font = pygame.font.Font('Windows Regular.ttf', 40)
+    font = pygame.font.Font('Windows Regular.ttf', 20)
     text_rendered = font.render(text, 1, grey_text)
     # Obtiene el rectángulo del texto y ajusta su posición
     text_rect = text_rendered.get_rect()
-    text_rect.topleft = (50, height - 150)
+    text_rect.topleft = (25, height - 100)
     window.blit(text_rendered, text_rect)
     pygame.display.flip()
 
@@ -281,38 +329,71 @@ def sample_of_defeated_pokemons(team1: 'Team', team2: 'Team') -> None:
 
 # ------------------ Simulación de batalla ------------------
 
-def fight_simulation_visualization(team1: 'Team', team2: 'Team', effectiveness: Dict[Tuple[str, str], float]) -> 'Team':
+def fight_simulation_visualization(team1: 'Team', team2: 'Team', efectiveness: Dict[Tuple[str, str], float]) -> 'Team':
     """
     Simula y visualiza una batalla entre dos equipos de Pokémon.
 
     Args:
         team1 (Team): El primer equipo de Pokémon.
         team2 (Team): El segundo equipo de Pokémon.
-        effectiveness (Dict[Tuple[str, str], float]): Un diccionario con la efectividad de los movimientos.
+        efectiveness (Dict[Tuple[str, str], float]): Un diccionario con la efectividad de los movimientos.
 
     Returns:
         Team: El equipo ganador.
     """
     print(f'¡{team2.name} quiere luchar!')
     events_visualization(f'¡{team2.name} quiere luchar!')
-    pygame.time.wait(2000)
+
     running = True
     clock = pygame.time.Clock()
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        window.blit(background, (0, 0))
+
+        if not any(pokemon.current_hp > 0 for pokemon in team1.pokemons):
+            events_visualization(f'¡{team2.name} ha ganado!')
+            break
+        elif not any(pokemon.current_hp > 0 for pokemon in team2.pokemons):
+            events_visualization(f'¡{team1.name} ha ganado!')
+            break
+        else:
+            if team1.pokemons:
+                current_pokemon1_name = team1.get_current_pokemon().name
+                special_events_visualization(f'{current_pokemon1_name}', 613, 408, 45, 2)
+                pygame.display.flip()
+
+            if team2.pokemons:
+                current_pokemon2_name = team2.get_current_pokemon().name
+                special_events_visualization(f'{current_pokemon2_name}', 18, 92, 45, 2)
+                pygame.display.flip()
+
         
         sample_of_defeated_pokemons(team1, team2)
 
+        if team1.pokemons:
+            current_pokemon1 = team1.get_current_pokemon()
+            show_pokemon(team1, team2, current_pokemon1, 120, 310, (250, 250))
+            pygame.display.flip()
+        
+        if team2.pokemons:
+            current_pokemon2 = team2.get_current_pokemon()
+            show_pokemon(team1, team2, current_pokemon2, 670, 120, (250, 250))
+            pygame.display.flip()
+        
+        round_simulation(team1, team2, efectiveness)
+        pygame.display.flip()
+
+        
         pygame.display.flip()
         clock.tick(60)
-
-        winner = get_winner(team1, team2, effectiveness)
-
-        pygame.time.wait(2000)
+        pygame.time.delay(2000)
     
-    return team1 if any(pokemon.current_hp > 0 for pokemon in team1.pokemons) else team2
+
+        
 
 def show_winner(team: 'Team') -> None:
     """
@@ -329,30 +410,114 @@ def show_winner(team: 'Team') -> None:
     pygame.display.flip()
     pygame.time.delay(2000)
 
+def our_do_action(attacker: 'Team', defender: 'Team', action: str, objetive: 'Move', efectiveness: Dict[Tuple[str, str], float]) -> None:
+    """
+    Realiza una acción en la batalla, ya sea un ataque o un cambio de Pokémon.
+
+    Args:
+        attacker (Team): El equipo que realiza la acción.
+        defender (Team): El equipo que recibe la acción.
+        action (str): La acción a realizar ('attack' o 'switch').
+        objetive (Move): El movimiento a usar o el Pokémon al que cambiar.
+        efectiveness (Dict[Tuple[str, str], float]): Un diccionario con la efectividad de los movimientos.
+    """
+
+    if action == 'attack':
+        damage = round(objetive.get_damage(attacker.get_current_pokemon(), defender.get_current_pokemon(), efectiveness))
+        print(f'{attacker.get_current_pokemon().name} ha usado {objetive.name} en {defender.get_current_pokemon().name} y ha hecho {damage} de daño')
+        events_visualization(f'{attacker.get_current_pokemon().name} usó {action}!')
+
+        if efectiveness > 1:
+            print('¡Es súper eficaz!')
+            events_visualization('¡Es súper eficaz!')
+        elif efectiveness == 1:
+            print('Es efectivo.')
+            events_visualization('Es efectivo.')
+        elif efectiveness == 0:
+            print(f'No afecta a {defender.name}...')
+            events_visualization(f'No afecta a {defender.name}...')
+        else:
+            print('No es muy eficaz...')
+            events_visualization('No es muy eficaz...')
+
+        if defender.get_current_pokemon().current_hp == 0:
+            print(f'{defender.get_current_pokemon().name} se debilitó...')
+            events_visualization(f'{defender.get_current_pokemon().name} se debilitó...')
+
+    elif action == 'switch':
+        attacker.do_action(action, objetive, defender, efectiveness)
+        print(f'{attacker.name} cambió a {attacker.get_current_pokemon().name} por {objetive.name}')
+        events_visualization(f'{attacker.name} cambió a {attacker.get_current_pokemon().name} por {objetive.name}')
+
+    pygame.time.wait(2000)
+
+def battle_turn (team1: 'Team', team2: 'Team', efectiveness: Dict[Tuple[str, str], float]) -> None:
+    """
+    Ejecuta un turno de batalla entre dos equipos de Pokémon.
+
+    Args:
+        team1 (Team): El primer equipo de Pokémon.
+        team2 (Team): El segundo equipo de Pokémon.
+        efectiveness (Dict[Tuple[str, str], float]): Un diccionario con la efectividad de los movimientos.
+    """
+    current_pokemon1 = team1.get_current_pokemon()
+    current_pokemon2 = team2.get_current_pokemon()
+
+    action1, objetive1 = team1.get_next_action(team2, efectiveness)
+    action2, objetive2 = team2.get_next_action(team1, efectiveness)
+
+    events_visualization(f'{team1.name}: {current_pokemon1.name} usó {action1}')
+    events_visualization(f'{team2.name}: {current_pokemon2.name} usó {action2}')
+
+    if action1 == 'switch' and objetive1 is not None:
+        team1.do_action(action1, objetive1, team2, efectiveness)
+        print(f'{team1.name} cambió a {current_pokemon1.name} por {objetive1.name}')
+        events_visualization(f'{team1.name} cambió a {current_pokemon1.name} por {objetive1.name}')
+
+    elif action2 == 'switch' and objetive2 is not None:
+        team2.do_action(action2, objetive2, team1, efectiveness)
+        print(f'{team2.name} cambió a {current_pokemon2.name} por {objetive2.name}')
+        events_visualization(f'{team2.name} cambió a {current_pokemon2.name} por {objetive2.name}')
+
+    else:
+        if current_pokemon1.speed > current_pokemon2.speed:
+            first, second = team1, team2
+            first_action, first_objetive, second_action, second_objetive = action1, objetive1, action2, objetive2
+        else:
+            first, second = team2, team1
+            first_action, first_objetive, second_action, second_objetive = action2, objetive2, action1, objetive1
+
+        our_do_action(first, second, first_action, first_objetive, efectiveness)
+        if second.get_current_pokemon().current_hp > 0:
+            our_do_action(second, first, second_action, second_objetive, efectiveness)
+
+    pygame.time.wait(2000)
+
+
 def main() -> None:
     """
     Función principal que carga los datos y ejecuta la simulación de batalla.
     """
     pokemons_data = define_pokemons_objects()
-    effectiveness = load_effectiveness('effectiveness_chart.csv')
+    efectiveness = load_effectiveness('effectiveness_chart.csv')
 
     best_team = Team('Epic Team', pokemons = [
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)]
+        pokemons_data[94],
+        pokemons_data[150],
+        pokemons_data[149],
+        pokemons_data[6],
+        pokemons_data[130],
+        pokemons_data[68]
     ])
 
     # Definición de los equipos basados en los datos cargados
     elite_four_will = Team('Will', [
-        pokemons_data[436],
-        pokemons_data[123],
-        pokemons_data[325],
-        pokemons_data[79],
-        pokemons_data[281],
-        pokemons_data[177]
+        pokemons_data[437],
+        pokemons_data[124],
+        pokemons_data[326],
+        pokemons_data[80],
+        pokemons_data[282],
+        pokemons_data[178]
     ])
 
     elite_four_koga = Team('Koga', [
@@ -391,171 +556,9 @@ def main() -> None:
         pokemons_data[130]
     ])
 
-    winner = fight_simulation_visualization(best_team, elite_four_will, effectiveness)
+    winner = fight_simulation_visualization(best_team, elite_four_will, efectiveness)
     print(winner)
     show_winner(winner)
-
-# ------------------ Simulación de batalla ------------------
-from utils.team import Team
-
-def __faint_change__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> None:
-    """
-    Changes the current pokemon of the team that has a fainted pokemon. The other team can also switch its pokemon after
-    the fainted team.
-
-    Parameters:
-    team1 (Team): One of the teams.
-    team2 (Team): The other team.
-    effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
-    another.
-    """
-    if team1.get_current_pokemon().current_hp == 0:
-        fainted_team = team1
-        other_team = team2
-    else:
-        fainted_team = team2
-        other_team = team1
-    action_1, target_1 = fainted_team.get_next_action(other_team, effectiveness)
-    fainted_team.do_action(action_1, target_1, other_team, effectiveness)
-    action_2, target_2 = other_team.get_next_action(fainted_team, effectiveness)
-    if action_2 == 'switch':
-        other_team.do_action(action_2, target_2, fainted_team, effectiveness)
-
-def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> Team:
-    """
-    Simulates a fight between two teams. The fight ends when all the pokemons of one of the teams have fainted.
-
-    Parameters:
-    team1 (Team): One of the teams.
-    team2 (Team): The other team.
-    effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
-    another.
-
-    Returns:
-    Team: The team that won the fight.
-    """
-    turn = 0
-    while any(pokemon.current_hp > 0 for pokemon in team1.pokemons) and any(pokemon.current_hp > 0 for pokemon in team2.pokemons):            
-        action_1, target_1 = team1.get_next_action(team2, effectiveness)
-        action_2, target_2 = team2.get_next_action(team1, effectiveness)
-        window.blit(background, (0, 0))
-        # Switching always happens first
-        if action_1 == 'switch':
-            first = team1
-            second = team2
-        elif action_2 == 'switch':
-            first = team2
-            second = team1
-            action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
-        # If nobody is switching, the fastest pokemon goes firsts
-        elif team1.get_current_pokemon().speed > team2.get_current_pokemon().speed:
-            first = team1
-            second = team2
-        else:
-            first = team2
-            second = team1
-            action_1, target_1, action_2, target_2 = action_2, target_2, action_1, target_1
-
-        first.do_action(action_1, target_1, second, effectiveness)
-        if action_1 == 'attack':
-            print(f'{first.get_current_pokemon().name} usó {target_1.name}!')
-            events_visualization(f'{first.get_current_pokemon().name} usó {target_1.name}!')
-        pokemon1 = team1.get_current_pokemon()
-        health_bar(pokemon1, 770, 460)
-        pygame.display.flip()
-        
-        # If any of the pokemons fainted, the turn ends, and both have the chance to switch
-        if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
-            __faint_change__(team1, team2, effectiveness)
-        else:
-            if action_2 == 'attack' and target_2 is None:
-                action_2, target_2 = second.get_next_action(first, effectiveness)
-            second.do_action(action_2, target_2, first, effectiveness)
-            if action_2 == 'attack':
-                print(f'{second.get_current_pokemon().name} usó {target_2.name}!')
-                events_visualization(f'{second.get_current_pokemon().name} usó {target_2.name}!')
-            pokemon2 = team2.get_current_pokemon()
-            health_bar(pokemon2, 190, 145)
-            pygame.display.flip()
-
-            if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
-                __faint_change__(team1, team2, effectiveness)
-
-        pokemon2 = team2.get_current_pokemon()
-        if pokemon2.current_hp <= 0:
-            print(f'{pokemon2.name} se debilitó...')
-            events_visualization(f'{pokemon2.name} se debilitó...')
-            if len(team2.pokemons) == 0:
-                print(f'¡Has derrotado a {team2.name}!')
-                pygame.time.delay(5000)
-
-            elif pokemon1.current_hp <= 0:
-                print(f'{pokemon1.name} se debilitó...')
-                if len(team1.pokemons) == 0:
-                    print(f'{team1.name} se quedó sin Pokémon utilizables.')
-                    pygame.time.delay(5000)
-        
-        if not any(pokemon.current_hp > 0 for pokemon in team1.pokemons):
-            events_visualization(f'¡{team2.name} ha ganado!')
-            break
-        elif not any(pokemon.current_hp > 0 for pokemon in team2.pokemons):
-            events_visualization(f'¡{team1.name} ha ganado!')
-            break
-        else:
-            if team1.pokemons:
-                current_pokemon1_name = team1.get_current_pokemon().name
-                special_events_visualization(f'{current_pokemon1_name}', 613, 408, 45, 2)
-            
-            if team2.pokemons:
-                current_pokemon2_name = team2.get_current_pokemon().name
-                special_events_visualization(f'{current_pokemon2_name}', 18, 92, 45, 2)
-
-        if team1.pokemons:
-            current_pokemon1 = team1.get_current_pokemon()
-            show_pokemon(team1, team2, current_pokemon1, 120, 310, (250, 250))
-        
-        if team2.pokemons:
-            current_pokemon2 = team2.get_current_pokemon()
-            show_pokemon(team1, team2, current_pokemon2, 670, 120, (250, 250))
-
-        pygame.display.flip()
-        turn += 1
-        pygame.time.wait(2000)
-    
-    return team1 if any(pokemon.current_hp > 0 for pokemon in team1.pokemons) else team2
-
-def get_winner(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> Team:
-    """
-    Simulates a fight between two teams. The fight ends when all the pokemons of one of the teams have fainted. The
-    pokemons of the teams are restored to their initial state after the fight.
-
-    Parameters:
-    team1 (Team): One of the teams.
-    team2 (Team): The other team.
-    effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
-    another.
-
-    Returns:
-    Team: The team that won the fight.
-    """
-    team1_starter_pokemon = team1.current_pokemon_index
-    team2_starter_pokemon = team2.current_pokemon_index
-    
-    winner = __fight__(team1, team2, effectiveness)
-    
-    # restore HP to max
-    for pokemon in team1.pokemons:
-        pokemon.current_hp = pokemon.max_hp
-    for pokemon in team2.pokemons:
-        pokemon.current_hp = pokemon.max_hp
-    
-    # restore current pokemon to starter
-    team1.current_pokemon_index = team1_starter_pokemon
-    team2.current_pokemon_index = team2_starter_pokemon
-    
-    return winner
-
-# ------------------ Main ------------------
 
 if __name__ == '__main__':
     main()
