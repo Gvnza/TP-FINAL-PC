@@ -99,6 +99,5 @@ def main():
     pokemon_count = dicc_pokemons_epochs(all_teams)
     epochs_csv(pokemon_count)
     best(best_result_list)
-        
-if __name__ == '__main__':
-    main()
+
+    return best_result_list[-1]

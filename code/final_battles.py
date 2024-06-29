@@ -4,7 +4,10 @@ import random
 from utils.team import Team
 import utils.pokemon as pokemon
 from utils.move import Move
+from simulation import main
 from typing import Dict, List, Tuple
+
+best_team = main()
 
 # ------------------ Carga de datos ------------------
 def define_pokemons_objects():
@@ -121,7 +124,7 @@ def load_img(pokedex: Dict[str, int]) -> Dict[str, pygame.Surface]:
     """
     img = {}
     for name, pokedex_number in pokedex.items():
-        number = f'{pokedex_number:03}'
+        number = f'{str(pokedex_number).zfill(3)}'
         img_path = f'imgs/{number}.png'
         try:
             image = pygame.image.load(img_path)
@@ -188,6 +191,30 @@ def events_visualization(text: str) -> None:
     # Obtiene el rectángulo del texto y ajusta su posición
     text_rect = text_rendered.get_rect()
     text_rect.topleft = (50, height - 150)
+    window.blit(text_rendered, text_rect)
+    pygame.display.flip()
+
+def events_visualization2(text: str) -> None:
+    """
+    Muestra un texto de evento en la pantalla.
+
+    Args:
+        text (str): El texto del evento que se mostrará.
+    """
+    font = pygame.font.Font('Windows Regular.ttf', 40)
+    text_rendered = font.render(text, 1, grey_text)
+    # Obtiene el rectángulo del texto y ajusta su posición
+    text_rect = text_rendered.get_rect()
+    text_rect.topleft = (50, height - 100)
+    window.blit(text_rendered, text_rect)
+    pygame.display.flip()
+
+def events_visualization_winner(text: str) -> None:
+    font = pygame.font.Font('Windows Regular.ttf', 40)
+    text_rendered = font.render(text, 1, grey_text)
+    # Obtiene el rectángulo del texto y ajusta su posición
+    text_rect = text_rendered.get_rect()
+    text_rect.center = (width // 2, height // 2)
     window.blit(text_rendered, text_rect)
     pygame.display.flip()
 
@@ -276,9 +303,6 @@ def sample_of_defeated_pokemons(team1: 'Team', team2: 'Team') -> None:
 
     pygame.display.flip()
 
-
-
-
 # ------------------ Simulación de batalla ------------------
 
 def fight_simulation_visualization(team1: 'Team', team2: 'Team', effectiveness: Dict[Tuple[str, str], float]) -> 'Team':
@@ -329,24 +353,15 @@ def show_winner(team: 'Team') -> None:
     pygame.display.flip()
     pygame.time.delay(2000)
 
-def main() -> None:
+def battle(best_team, rival) -> None:
     """
     Función principal que carga los datos y ejecuta la simulación de batalla.
     """
     pokemons_data = define_pokemons_objects()
     effectiveness = load_effectiveness('effectiveness_chart.csv')
 
-    best_team = Team('Epic Team', pokemons = [
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)],
-        pokemons_data[random.randint(0, 801)]
-    ])
-
     # Definición de los equipos basados en los datos cargados
-    elite_four_will = Team('Will', [
+    will = Team('Will', [
         pokemons_data[436],
         pokemons_data[123],
         pokemons_data[325],
@@ -355,7 +370,7 @@ def main() -> None:
         pokemons_data[177]
     ])
 
-    elite_four_koga = Team('Koga', [
+    koga = Team('Koga', [
         pokemons_data[435],
         pokemons_data[454],
         pokemons_data[317],
@@ -364,7 +379,7 @@ def main() -> None:
         pokemons_data[169]
     ])
 
-    elite_four_bruno = Team('Bruno', [
+    bruno = Team('Bruno', [
         pokemons_data[237],
         pokemons_data[106],
         pokemons_data[297],
@@ -373,7 +388,7 @@ def main() -> None:
         pokemons_data[107]
     ])
 
-    elite_four_karen = Team('Karen', [
+    karen = Team('Karen', [
         pokemons_data[461],
         pokemons_data[442],
         pokemons_data[430],
@@ -382,7 +397,7 @@ def main() -> None:
         pokemons_data[359]
     ])
 
-    champion_lance = Team('Lance', [
+    lance = Team('Lance', [
         pokemons_data[373],
         pokemons_data[445],
         pokemons_data[149],
@@ -391,7 +406,7 @@ def main() -> None:
         pokemons_data[130]
     ])
 
-    winner = fight_simulation_visualization(best_team, elite_four_will, effectiveness)
+    winner = fight_simulation_visualization(best_team, rival, effectiveness)
     print(winner)
     show_winner(winner)
 
@@ -434,6 +449,8 @@ def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float
     Returns:
     Team: The team that won the fight.
     """
+    counter_team1 = 0
+    counter_team2 = 0
     turn = 0
     while any(pokemon.current_hp > 0 for pokemon in team1.pokemons) and any(pokemon.current_hp > 0 for pokemon in team2.pokemons):            
         action_1, target_1 = team1.get_next_action(team2, effectiveness)
@@ -465,15 +482,19 @@ def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float
         pygame.display.flip()
         
         # If any of the pokemons fainted, the turn ends, and both have the chance to switch
-        if team1.get_current_pokemon().current_hp == 0 or team2.get_current_pokemon().current_hp == 0:
+        if team1.get_current_pokemon().current_hp <= 0 or team2.get_current_pokemon().current_hp <= 0:
             __faint_change__(team1, team2, effectiveness)
+            if team1.get_current_pokemon().current_hp <= 0:
+                counter_team1 += 1
+            elif team2.get_current_pokemon().current_hp <= 0:
+                counter_team2 += 1
         else:
             if action_2 == 'attack' and target_2 is None:
                 action_2, target_2 = second.get_next_action(first, effectiveness)
             second.do_action(action_2, target_2, first, effectiveness)
             if action_2 == 'attack':
                 print(f'{second.get_current_pokemon().name} usó {target_2.name}!')
-                events_visualization(f'{second.get_current_pokemon().name} usó {target_2.name}!')
+                events_visualization2(f'{second.get_current_pokemon().name} usó {target_2.name}!')
             pokemon2 = team2.get_current_pokemon()
             health_bar(pokemon2, 190, 145)
             pygame.display.flip()
@@ -496,10 +517,14 @@ def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float
                     pygame.time.delay(5000)
         
         if not any(pokemon.current_hp > 0 for pokemon in team1.pokemons):
-            events_visualization(f'¡{team2.name} ha ganado!')
+            events_visualization_winner(f'¡{team2.name} ha ganado!')
+            pygame.time.delay(1000)
+            pygame.quit()
             break
         elif not any(pokemon.current_hp > 0 for pokemon in team2.pokemons):
-            events_visualization(f'¡{team1.name} ha ganado!')
+            events_visualization_winner(f'¡{team1.name} ha ganado!')
+            pygame.time.delay(1000)
+            pygame.quit()
             break
         else:
             if team1.pokemons:
@@ -517,6 +542,9 @@ def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float
         if team2.pokemons:
             current_pokemon2 = team2.get_current_pokemon()
             show_pokemon(team1, team2, current_pokemon2, 670, 120, (250, 250))
+
+        line1_right_events_visualization(f'Jugador: {counter_team2} pokemones derrotados')
+        line2_right_events_visualization(f'{team2.name}: {counter_team1} pokemones derrotados')
 
         pygame.display.flip()
         turn += 1
@@ -558,4 +586,5 @@ def get_winner(team1: Team, team2: Team, effectiveness: dict[str, dict[str, floa
 # ------------------ Main ------------------
 
 if __name__ == '__main__':
-    main()
+    rival = input("Ingrese el nombre del rival: ")
+    battle(best_team, rival)
