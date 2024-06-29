@@ -1,7 +1,7 @@
 from selection import crossing, improve_rivals
 from team_gen import create_teams, define_pokemons_objects, create_teams_with_legendaries
 from team_battle import fights
-import situationalGraphs
+from situationalGraphs import gauss
 import standardGraphs as sg
 import time
 import random
@@ -93,7 +93,7 @@ def main():
     sg.radar_chart(list(resulsts.keys())[0])
 
     #Stats
-    sg.gauss()
+    gauss()
         
     #CSV
     pokemon_count = dicc_pokemons_epochs(all_teams)

@@ -35,8 +35,4 @@ def gauss():
     plt.xlabel('Total de mutaciones')
     plt.ylabel('Frecuencia')
     plt.title('Distribución de la cantidad de mutaciones en 1000 simulaciones')
-    plt.show()
-
-    save_question = input('¿Desea guardar el gráfico?:\n[1] Sí\n[2] No\n')
-    if save_question == '1':
-        plt.savefig('gauss.png')
+    plt.savefig('gauss.png')

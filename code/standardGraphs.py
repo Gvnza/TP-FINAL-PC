@@ -117,21 +117,31 @@ def pokemon_type_distribution(teams):
 
 def radar_chart(best_team):
     labels = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
-    for pokemon in best_team.pokemons:
-        values = [pokemon.max_hp, pokemon.attack, pokemon.defense, pokemon.sp_attack, pokemon.sp_defense, pokemon.speed]
-        angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-        values += values[:1]
+    num_vars = len(labels)
+
+    #Colores
+    colors = ['darkslategrey', 'slategrey', 'rebeccapurple', 'antiquewhite', 'firebrick', 'grey']
+    
+    #Subtramas
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    
+    #El bucle necesario
+    for i, poke in enumerate(best_team.pokemons):
+        stats = [poke.max_hp, poke.attack, poke.defense, poke.sp_attack, poke.sp_defense, poke.speed]
+        
+        #Repetir la ultima stat
+        stats += stats[:1]
+
+        #Angulos
+        angles = [n / float(num_vars) * 2 * np.pi for n in range(num_vars)]
         angles += angles[:1]
 
-        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={'projection': 'polar'})
-        ax.fill(angles, values, color='skyblue', alpha=0.25)
-        ax.plot(angles, values, color='skyblue', linewidth=2)
+        ax.plot(angles, stats, color=colors[i], linewidth=2, linestyle='solid', label=poke.name)
+        ax.fill(angles, stats, color=colors[i], alpha=0.25)
     
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels)
-    
-    ax.yaxis.grid(True)
-    ax.set_title('Estadísticas del mejor equipo')
+    #Etiquetas
+    plt.xticks(angles[:-1], labels)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 0.7))
     plt.savefig('radar_chart.png')
     plt.close()
 
@@ -144,7 +154,7 @@ def show_best_team(best_team):
 
     # Prepara un subplot para mostrar las imágenes
     fig, axes = plt.subplots(2, 3)
-    fig.suptitle('Mejor Equipo Encontrado\n')
+    fig.suptitle('Mejor Equipo Encontrado', y=1.05)
 
     i = 0
     # Muestra las imágenes e información de cada Pokémon en el mejor equipo
