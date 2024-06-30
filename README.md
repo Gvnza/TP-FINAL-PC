@@ -2,30 +2,31 @@
 
 Trabajo final pensamiento computacional. 
 
-Ideas:
+Archivos ejecutables:
+    Simulation.py - Simulacion de las epocas, se puede cambiar el número de epocas en el for de la linea 44. Hace los graficos y los CSVs
+    Main.py - Hace lo mismo que Simulation.py y toma al mejor equipo y lo hace pelear con el rival que elijas.
 
-    Que los pokemones que muten se queden obligatoriamente, es decir, que al elegir dos equipos, 
-    si hay algun pokemon que mute, que se asegure que quede en el equipo final de ese cruce.
-
-    Mejorar los rivales de base; Tomar 800, hacerlos pelear y tomar los mejores 400. Por otro lado, es mucha carga (sería lo equivalente a las peleas de 32 epocas).
-    Por otro lado, si lo logramos optimizar, serian 16.02 epocas. Se puede hacer recorriendolos desde [i+1].
+Cambios:
+    Implementacion del crítico: Hay un 4% de probabilidad de que se efectue un golpe crítico.
+    'Fixeo' de los ataques - Había un problema en la forma en la que se verificaba si el ataque fallaba o no - las presiciones estaban en funcion de 100 y se verificaba 
+                             con un random.random() el cual esta en funcion de 1 (O sea, las presiciones iban de 0 a 100 y el random.random() de 0 a 1). Se multiplicó por 
+                             100 el random.random()
+    Algoritmo Genetico:
+        Equipos:
+            Se hace pelear a los 2 equipos elegidos (los cuales se eligen segun el % de victorias de todos los equipos que representan)   
+            Mutacion - Solo pueden mutar los pokemones del equipo perdedor
+            Se eligen en un 75% de los casos a los pokemones del equipo ganador
+        Rivales:
+            Si el promedio de batallas ganadas por equipo es mayora 350 y los rivales no aumentaron sus estadísticas en la anterior época, estos mejoran sus estadiísticas 
+            Cuando sus estadísticas mejoran, solo mejoran 3 al azar Si el pokemon no es legendario
+            Los rivales tienen un pokemon legendario asegurado, y pueden tener un máximo de 2.
+    Gráficos:
+        Se añadieron unos cuantos gráficos:
+            Gauss:
+                Hace mil simulaciones (no realmente, solo toma los datos y probabilidades) y usando bernoulli de scipy.stats y numpy se un grafico que sea una campana de gauss
+                y otro que muestre cuantas veces se repitio una cantidad de simulaciones (ya que es un histograma, se reparten en 30 bins)
+            Victorias:
+                Las victorias del mejor equipo y el mejor rival por epoca.
+                Promedio de victorias de los equipos por época.
+        
     
-    Ajustes al sistema de mejora de los rivales.
-    
-    Tomar al mejor equipo de la ultima epoca con dos criterios y un sistema de "puntos". El primero seria segun cuantos combates gano contra los rivales.
-    El segundo contaria cuantas veces gano contra los demas equipos.
-    Bonus: Se podría agregar uno mas que los enfrente a los campeones, pero al ser combates mas dificiles, puede no afectar mucho, habría que ver.
-
-    Hacer un grafico de los tipos de la primer generacion de rivales y de equipos y de la ultima, y comparar como evolucionaron los tipos y porque lo hicieron
-    de esa forma.
-    
-    Todos los rivales legendarios
-
-    Suma total de Stats
-
-    Mutaciones legendarias
-
-    Traer (de alguna manera, de algun lugar) equipos competitivos o "meta" y fijarse que tan aptos son los equipos finales y que tanto se parecen a estos equipos.
-    Esto sería bastante dificil igual
-
-    Tomar las estadisticas de todos los pokemones de la ultima epoca, y hacer un gráfico para ver cuales fueron las stats mas importantes (y por ende, a que se premia mas)

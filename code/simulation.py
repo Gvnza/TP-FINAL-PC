@@ -7,7 +7,8 @@ import time
 import random
 from termcolor import cprint
 from exit_csv import epochs_csv, best, dicc_pokemons_epochs
-def main():
+
+def simulation():
     average_list = []
     rivals_best_results = []
     all_teams = []
@@ -16,6 +17,7 @@ def main():
     time_per_epoch = []
     init_time = time.time()
     counter = 0
+    best_team_list = []
     #Recoleccion de datos, medianamente irrelevante.
 
     pokemon_objects, legendaries = define_pokemons_objects()
@@ -24,8 +26,9 @@ def main():
     rivals = create_teams_with_legendaries(400, pokemon_objects, legendaries)
     #Inicializacion de los rivales y los equipos.
     print('-'*70)
-    resulsts, average, rivals_results, best_result = fights(teams, rivals, 0) 
+    resulsts, average, rivals_results, best_result, best_team = fights(teams, rivals, 0) 
     
+    best_team_list.append(best_team)
     best_result_list.append(best_result)
     average_list.append(average)
     rivals_best_results.append(list(rivals_results.values())[0])
@@ -38,9 +41,11 @@ def main():
     print('-'*70)
     time_per_epoch.append(tiempo1 - init_time)
     #Basicamente, muestra de datos y recoleccion.
-    for i in range(1, 2):
+    for i in range(1, 51):
         epoch_begg = time.time()
-        resulsts, average, rivals_results, best_result = fights(mutated_teams, rivals, i)
+        resulsts, average, rivals_results, best_result, best_team= fights(mutated_teams, rivals, i)
+
+        best_team_list.append(best_team)
         best_result_list.append(best_result)
         average_list.append(average)
         rivals_best_results.append(list(rivals_results.values())[0])
@@ -71,13 +76,11 @@ def main():
     print(f'La simulacion tardó {minutes:.0f} minuto(s) y {end_time - init_time - minutes*60:.0f} segundo(s).')
 
     #Diversidad
-    #Funciona pero nombres
     sg.pokemon_diversity(all_teams)
 
-    #Funciona pero nombres?
     sg.pokemon_distribution(mutated_teams)
 
-    #Funciona medio extraño
+
     sg.second_pokemon_type_distribution(mutated_teams)
     sg.pokemon_type_distribution(all_teams)
     
@@ -93,11 +96,18 @@ def main():
     sg.radar_chart(list(resulsts.keys())[0])
 
     #Stats
+    print('-'*70)
+    print('Haciendo la campana de gauss, espera...')
     gauss()
-        
+    print('Campana de gauss terminada!')
     #CSV
-    pokemon_count = dicc_pokemons_epochs(all_teams)
-    epochs_csv(pokemon_count)
-    best(best_result_list)
 
-    return best_result_list[-1]
+    pokemon_count = dicc_pokemons_epochs(all_teams)
+    
+    epochs_csv(pokemon_count)
+    best(best_team_list, best_result_list)
+
+    return best_team_list[-1]
+
+if __name__ == '__main__':
+    simulation()

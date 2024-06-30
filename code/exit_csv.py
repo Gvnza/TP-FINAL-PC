@@ -24,16 +24,16 @@ def epochs_csv(pokemon_count):
                 row.extend([number, pokemon])
             writer.writerow(row)
 
-def best(best_restuls):
+def best(best_restuls, results):
     with open('best_teams.csv', 'w', newline='') as best_teams:
-        fieldnames = ['epoch', 'aptitude', 'team_name', 'starter', 'pokemon_1', 'pokemon_2', 'pokemon_3', 'pokemon_4', 'pokemon_5', 'pokemon_6']
+        fieldnames = ['epoch', 'aptitude', 'team_name', 'pokemon_1', 'pokemon_2', 'pokemon_3', 'pokemon_4', 'pokemon_5', 'pokemon_6']
         writer = csv.writer(best_teams)
         best_teams.seek(0)
         writer.writerow(fieldnames)
-        for idx, result in enumerate(best_restuls, start=1):
+        for idx, team in enumerate(best_restuls, start=1):
             row = [idx]
-            team = result[0]
-            number = result[1]
+            team = team
+            number = results[idx -1]
             team_pokemons = [pokemon.name for pokemon in team.pokemons]
             row.extend([number, team.name, '0'])
             for pokemon in team_pokemons:
